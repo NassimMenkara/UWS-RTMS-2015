@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Select.Pdf</id>
+    <version>15.2.0.0</version>
+    <title>Select.Pdf for .NET</title>
+    <authors>SelectPdf</authors>
+    <owners>SelectPdf</owners>
+    <projectUrl>http://selectpdf.com/</projectUrl>
+    <iconUrl>http://selectpdf.com/icon144x144.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Select.Pdf can be used as a general purpose PDF library in any .NET application. It offers the possibility to create or modify existing documents, add new elements (like text, html, images, shapes), change pdf document security settings, merge or split existing documents and many more.
+
+Select.Pdf also contains a state of the art html to pdf converter that supports the latest html and css versions.</description>
+    <summary>Select.Pdf for .NET is a powerful PDF library that enables software developers to create, read and modify PDF files.</summary>
+    <language>en-US</language>
+    <tags>pdf converter html2pdf htmltopdf html library html-to-pdf pdf-converter html-to-pdf-converter sdk</tags>
+  </metadata>
+</package>

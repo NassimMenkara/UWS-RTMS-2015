@@ -4,5 +4,14 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@section scripts{
+    <script src="~/Javascript/ReportingApp.js"> </script>
+    <script src="~/Javascript/jspdf.js"> </script>
+}
 <h2>Reporting</h2>
+
+<p>Please select the report you would like to generate</p>
+
+Intervention Results Report: <button id="reportBtn" onclick="generatePDF()" class="btn-sm">Generate Report</button>
+
 

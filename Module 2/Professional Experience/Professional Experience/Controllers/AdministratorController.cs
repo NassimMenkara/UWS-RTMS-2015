@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Configuration;
@@ -30,7 +31,12 @@ namespace Professional_Experience.Controllers
         }
         public ActionResult Reporting()
         {
-            return View();
+            return View();    
+        }
+
+        public void GenerateReport()
+        {
+            
         }
 
         [HttpPost]
@@ -94,11 +100,12 @@ namespace Professional_Experience.Controllers
                 dynamic[] Questions = intervention.Tests[i].Questions.ToObject<dynamic[]>();
                 for (int j = 0; j < Questions.Length; j++)
                 {
-                    sql = "INSERT INTO Intervention_Area_Test_Question (Intervention_Area_Test_Id, Question, Question_Type) OUTPUT INSERTED.ID values (@Intervention_Area_Test_Id, @Question, @Question_Type)";
+                    sql = "INSERT INTO Intervention_Area_Test_Question (Intervention_Area_Test_Id, Question, Question_Type, Sequence) OUTPUT INSERTED.ID values (@Intervention_Area_Test_Id, @Question, @Question_Type, @Sequence)";
                     cmd = new SqlCommand(sql, conn);
                     cmd.Parameters.Add("@Intervention_Area_Test_Id", SqlDbType.Int).Value = testId;
                     cmd.Parameters.Add("@Question", SqlDbType.VarChar).Value = Questions[j].Question_Title;
                     cmd.Parameters.Add("@Question_Type", SqlDbType.VarChar).Value = Questions[j].Answer_Type;
+                    cmd.Parameters.Add("@Sequence", SqlDbType.Int).Value = j+1;
                     int questionId = (int)cmd.ExecuteScalar();
                     dynamic[] Answers = intervention.Tests[i].Questions[j].Answers.ToObject<dynamic[]>();
                     for(int k = 0; k < Answers.Length; k++)

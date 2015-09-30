@@ -65,5 +65,6 @@ C:\Users\Nassim\Desktop\UWS\Professional Experience\UWS-RTMS-2015\Module 2\Profe
 C:\Users\Nassim\Desktop\UWS\Professional Experience\UWS-RTMS-2015\Module 2\Professional Experience\PX_Model\bin\Debug\System.Web.WebPages.Deployment.xml
 C:\Users\Nassim\Desktop\UWS\Professional Experience\UWS-RTMS-2015\Module 2\Professional Experience\PX_Model\bin\Debug\System.Web.WebPages.Razor.xml
 C:\Users\Nassim\Desktop\UWS\Professional Experience\UWS-RTMS-2015\Module 2\Professional Experience\PX_Model\bin\Debug\WebMatrix.Data.xml
+C:\Users\Nassim\Desktop\UWS\Professional Experience\UWS-RTMS-2015\Module 2\Professional Experience\PX_Model\obj\Debug\PX_Model.csprojResolveAssemblyReference.cache
 C:\Users\Nassim\Desktop\UWS\Professional Experience\UWS-RTMS-2015\Module 2\Professional Experience\PX_Model\obj\Debug\PX_Model.dll
 C:\Users\Nassim\Desktop\UWS\Professional Experience\UWS-RTMS-2015\Module 2\Professional Experience\PX_Model\obj\Debug\PX_Model.pdb

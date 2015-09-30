@@ -14,6 +14,8 @@ var Question = function () {
     this.Answer_Type = "";
     this.Answers = [];
 };
+var testCount = 0;
+var questionCount = 0;
 var currentTestId = 0;
 var currentQuestionId = 0;
 var editingTest = false;
@@ -36,7 +38,8 @@ function createExternalTest()
 {
     if (externalTest == 0) {
         var test = new Test(); //create test object
-        test.Test_Id = intervention.Tests.length + 1; //Id is +1 of length, starting id = 1
+        testCount++;
+        test.Test_Id = testCount; //Id is +1 of length, starting id = 1
         test.Test_Name = "Mockup External Test";
         test.Test_Description = "This is a mockup external test that will be used to demonstrate the use of an external API";
         currentTestId = test.Test_Id; //the current test's id
@@ -89,8 +92,9 @@ function deleteTest()
 function createQuestion()
 {
     var question = new Question(); //create question object
+    questionCount++;
     var testIndex = getTestIndex(currentTestId);
-    question.Question_Id = intervention.Tests[testIndex].Questions.length + 1; //Id is +1 of length, starting id = 1
+    question.Question_Id = questionCount; //Id is +1 of length, starting id = 1
     currentQuestionId = question.Question_Id; //the current question's id
     intervention.Tests[testIndex].Questions.push(question);
     printMessage("New question has been created", "success");
