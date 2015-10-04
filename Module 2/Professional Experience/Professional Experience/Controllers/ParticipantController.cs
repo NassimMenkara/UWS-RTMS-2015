@@ -10,7 +10,10 @@ using System.Reflection;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
-using Professional_Experience.Models;
+using System.Web.Script.Serialization;
+using System.Net;
+using System.IO;
+using System.Text;
 
 
 namespace Professional_Experience.Controllers
@@ -144,7 +147,7 @@ namespace Professional_Experience.Controllers
                 questionIds.Add(reader["Id"].ToString());
             }
             conn.Close();
-            int Trial_Participant_Intervention_Area_Test_Id = insertTestCompleted(trialParticipantId, Convert.ToInt32(testDetails.Intervention_Area_Test_Id)); //inserts test details
+            int Trial_Participant_Intervention_Area_Test_Id = insertTestCompleted(trialParticipantId, Convert.ToInt32(testDetails.Intervention_Area_Test_Id), DateTime.Now); //inserts test details
             for(int i = 0; i < questionIds.Count; i++)
             {
                 if (testAnswers[questionIds[i]].GetType() == typeof(JArray))
@@ -167,9 +170,205 @@ namespace Professional_Experience.Controllers
             //return Json("fail", JsonRequestBehavior.AllowGet);      
         }
 
+        public string getApiKey(string username)
+        {
+            string person_id = "";
+            string api_key = "";
+
+            String connectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+            SqlConnection conn = new SqlConnection(connectionString);
+            conn.Open();
+
+            String sql = "SELECT Id FROM Person WHERE Username = '" + username + "'";
+            System.Diagnostics.Debug.WriteLine(sql);
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            SqlDataReader nwReader = cmd.ExecuteReader();
+            while (nwReader.Read())
+            {
+                person_id = nwReader["Id"].ToString();
+                System.Diagnostics.Debug.WriteLine(person_id);
+            }
+            nwReader.Close();
+
+
+            sql = "SELECT api_key FROM Participant WHERE Person_Id = " + person_id;
+            System.Diagnostics.Debug.WriteLine(sql);
+            cmd = new SqlCommand(sql, conn);
+            nwReader = cmd.ExecuteReader();
+            while (nwReader.Read())
+            {
+                api_key = nwReader["api_key"].ToString();
+                System.Diagnostics.Debug.WriteLine(api_key);
+            }
+            nwReader.Close();
+            conn.Close();
+            return api_key;
+        }
+
+        public ActionResult ExternalTestIndex(int trialId, int testId)
+        {
+            ViewBag.trialId = trialId;
+            ViewBag.testId = testId;
+            String username = System.Web.HttpContext.Current.User.Identity.Name;
+            string api_key = getApiKey(username);
+
+            if (string.IsNullOrEmpty(api_key))
+                ViewBag.api_key = "false";
+            else
+                ViewBag.api_key = api_key;
+            return View();
+        }
+
+        public ActionResult ExternalTestResultRetrieval(int trialId, int testId)
+        {
+            ExternalResultRequest resultRequest = new ExternalResultRequest();
+            resultRequest.request = "getResults";
+            resultRequest.date1 = DateTime.Today.ToString("yyyy-MM-dd HH:mm:ss");
+            resultRequest.date2 = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd HH:mm:ss");
+            String username = System.Web.HttpContext.Current.User.Identity.Name;
+            resultRequest.key = getApiKey(username);
+
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            string predata = serializer.Serialize(resultRequest);
+            var data = Encoding.ASCII.GetBytes(predata);
+            var request = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:8080/externalapi");
+            request.Method = "POST";
+            request.Accept = "application/json";
+            request.ContentType = "application/json";
+            request.ContentLength = data.Length;
+            using (var stream = request.GetRequestStream())
+            {
+                stream.Write(data, 0, data.Length);
+                stream.Close();
+            }
+
+
+            var response = request.GetResponse();
+            var rStream = response.GetResponseStream();
+            var sr = new StreamReader(rStream);
+            var content = sr.ReadToEnd();
+            System.Diagnostics.Debug.WriteLine(content);
+            dynamic result = Newtonsoft.Json.JsonConvert.DeserializeObject(content);
+            if (result.Success == "true")
+            {
+                String connectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+                SqlConnection conn = new SqlConnection(connectionString);
+                conn.Open();
+
+                String sql = "SELECT Trial_Participant.Id FROM Trial_Participant INNER JOIN Trial ON Trial_Participant.Trial_Id = Trial.Id INNER JOIN Participant ON Trial_Participant.Participant_Id = Participant.Id INNER JOIN Person ON Participant.Person_Id = Person.Id WHERE Trial.Id = '" + trialId + "' AND Person.Username = '" + username + "';";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                int trialParticipantId = (int)cmd.ExecuteScalar();
+
+                List<String> questionIds = new List<String>();
+                List<String> questionTitles = new List<String>();
+                sql = "SELECT * FROM Intervention_Area_Test_Question WHERE Intervention_Area_Test_Id = '" + testId + "' ORDER BY Sequence;";
+                cmd = new SqlCommand(sql, conn);
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    questionIds.Add(reader["Id"].ToString());
+                    questionTitles.Add(reader["Question"].ToString());
+                }
+                for (int i = 0; i < result.Results.Count; i++)
+                {
+
+                    DateTime timestamp = DateTime.ParseExact(result.Results[i].Timestamp.ToString(), "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+
+                    int Trial_Participant_Intervention_Area_Test_Id = insertTestCompleted(trialParticipantId, testId, timestamp); //inserts test details
+                    for (int j = 0; j < questionIds.Count; j++)
+                    {
+                        if (questionTitles[j] == "q1")
+                        {
+                            insertAnswer(Convert.ToInt32(questionIds[j]), Trial_Participant_Intervention_Area_Test_Id, result.Results[i].Question1.ToString());
+                        }
+                        if (questionTitles[j] == "q2")
+                        {
+                            insertAnswer(Convert.ToInt32(questionIds[j]), Trial_Participant_Intervention_Area_Test_Id, result.Results[i].Question2.ToString());
+                        }
+                        if (questionTitles[j] == "s1")
+                        {
+                            insertAnswer(Convert.ToInt32(questionIds[j]), Trial_Participant_Intervention_Area_Test_Id, result.Results[i].Score1.ToString());
+                        }
+                        if (questionTitles[j] == "s2")
+                        {
+                            insertAnswer(Convert.ToInt32(questionIds[j]), Trial_Participant_Intervention_Area_Test_Id, result.Results[i].Score2.ToString());
+                        }
+                    }
+                }
+
+                ViewBag.result = "Result retrieval succeeded";
+            }
+            else if (result.Sucess == "false")
+            {
+                ViewBag.result = "Result retrieval failed";
+            }
+
+            return View();
+        }
+
+
+
+        public ActionResult SubmitExternalLogin(ExternalLoginViewModel ExternalLogin)
+        {
+            ExternalLogin.request = "getAPIKey";
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            string predata = serializer.Serialize(ExternalLogin);
+            System.Diagnostics.Debug.WriteLine(predata);
+            var data = Encoding.ASCII.GetBytes(predata);
+            var request = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:8080/externalapi");
+            request.Method = "POST";
+            request.Accept = "application/json";
+            request.ContentType = "application/json";
+            request.ContentLength = data.Length;
+            using (var stream = request.GetRequestStream())
+            {
+                stream.Write(data, 0, data.Length);
+                stream.Close();
+            }
+
+            var response = request.GetResponse();
+            var rStream = response.GetResponseStream();
+            var sr = new StreamReader(rStream);
+            var content = sr.ReadToEnd();
+            System.Diagnostics.Debug.WriteLine(content);
+            dynamic result = Newtonsoft.Json.JsonConvert.DeserializeObject(content);
+            if (result.Success == "true")
+            {
+                String username = System.Web.HttpContext.Current.User.Identity.Name;
+                String connectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+                SqlConnection conn = new SqlConnection(connectionString);
+                conn.Open();
+                String sql = "SELECT Id FROM Person WHERE Username = '" + username + "'";
+                System.Diagnostics.Debug.WriteLine(sql);
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                SqlDataReader nwReader = cmd.ExecuteReader();
+                string person_id = "";
+                while (nwReader.Read())
+                {
+                    person_id = nwReader["Id"].ToString();
+                    System.Diagnostics.Debug.WriteLine(person_id);
+                }
+                nwReader.Close();
+                string api_key = result.APIKey.ToObject<string>();
+                sql = "UPDATE Participant SET api_key = '" + api_key + "' WHERE Person_Id = " + person_id;
+                System.Diagnostics.Debug.WriteLine(sql);
+                cmd = new SqlCommand(sql, conn);
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            else if (result.Success == "false")
+            {
+                ViewBag.result = "failed";
+            }
+
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+
         /* Inserts into Trial_Participant_Intervention_Area_Test 
          * to record details of a completed test */
-        private int insertTestCompleted(int Trial_Participant_Id, int Intervention_Area_Test_Id)
+        private int insertTestCompleted(int Trial_Participant_Id, int Intervention_Area_Test_Id, DateTime timestamp)
         {
             String connectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
             SqlConnection conn = new SqlConnection(connectionString);
@@ -178,7 +377,7 @@ namespace Professional_Experience.Controllers
             SqlCommand cmd = new SqlCommand(sql, conn);
             cmd.Parameters.Add("@Trial_Participant_Id", SqlDbType.Int).Value = Trial_Participant_Id;
             cmd.Parameters.Add("@Intervention_Area_Test_Id", SqlDbType.Int).Value = Intervention_Area_Test_Id;
-            cmd.Parameters.Add("@DateTaken", SqlDbType.DateTime).Value = DateTime.Now;
+            cmd.Parameters.Add("@DateTaken", SqlDbType.DateTime).Value = timestamp;
             return (int)cmd.ExecuteScalar();
         }
         /* Inserts into Intervention_Area_Test_Question_Answer to record participant's answer */

@@ -32,5 +32,13 @@ InterventionResultsApp.controller('InterventionResultsController', function ($sc
             }, function (error) {
             });
     };
+
+    $scope.setActive = function (i) {
+        if ($scope.index == i) {
+            return "active";
+        } else {
+            return "";
+        }
+    }
 });
 //-------------------------------------------------------------------------------------------------------------

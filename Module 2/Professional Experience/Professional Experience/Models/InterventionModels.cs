@@ -52,4 +52,12 @@ namespace Professional_Experience.Models
             public List<String> Answers { get; protected set; }
         }
     }
+    public class ExternalResultRequest
+    {
+        public string request { get; set; }
+        public string key { get; set; }
+        public string date1 { get; set; }
+        public string date2 { get; set; }
+
+    }
 }

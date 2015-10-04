@@ -7,6 +7,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Configuration;
@@ -34,9 +35,64 @@ namespace Professional_Experience.Controllers
             return View();    
         }
 
-        public void GenerateReport()
+       /* Get all interventions */
+        public string GetInterventions()
         {
-            
+            String connectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+            SqlConnection con = new SqlConnection(connectionString);
+            con.Open();
+            String sql = "SELECT * FROM Intervention_Area;";
+            SqlCommand cmd = new SqlCommand(sql, con);
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            return ConvertDataTabletoString(dt);
+        }
+
+        public JsonResult GenerateReport(ReportViewModel m)
+        {
+            if (ModelState.IsValid)
+            {
+                //get all tests associated with the selected intervention
+                //For each test taken within the date range, get answers
+                //Generate simple statistics, averages etc from data
+                //Return data to client
+                int interventionId = m.Intervention;
+                List<ReportTestModel> tests = new List<ReportTestModel>();
+                String connectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+                SqlConnection conn = new SqlConnection(connectionString);
+                conn.Open();
+                String sql = "SELECT * FROM Intervention_Area_Test WHERE Intervention_Area_Id = '" + interventionId + "';";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                SqlDataReader nwReader = cmd.ExecuteReader();
+
+                while (nwReader.Read())
+                {
+                    ReportTestModel test = new ReportTestModel();
+                    test.Id = Convert.ToInt32(nwReader["Id"].ToString());
+                    test.Name = nwReader["Name"].ToString();
+                    test.Description = nwReader["Description"].ToString();
+                    SqlConnection testConn = new SqlConnection(connectionString);
+                    testConn.Open();
+                    if (m.FilterSelection == 1){
+                        sql = "SELECT Count(Id) FROM Trial_Participant_Intervention_Area_Test WHERE Intervention_Area_Test_Id = '" + test.Id + "';";
+                    }
+                    else if (m.FilterSelection == 2)
+                    {
+                        String startDate = DateTime.ParseExact(m.StartDate, "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
+                        String endDate = DateTime.ParseExact(m.EndDate, "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
+                        sql = "SELECT Count(Id) FROM Trial_Participant_Intervention_Area_Test WHERE Trial_Participant_Intervention_Area_Test.DateTaken BETWEEN '" + startDate + "' AND '" + endDate + "' AND Intervention_Area_Test_Id = '" + test.Id + "';";
+                    }
+                    SqlCommand testCmd = new SqlCommand(sql, testConn);
+                    test.CompletionCount = (int)testCmd.ExecuteScalar();
+                    testConn.Close();
+                    tests.Add(test);
+                }
+                nwReader.Close();
+                conn.Close();
+                return Json(tests, JsonRequestBehavior.AllowGet);
+            }
+            return Json("fail", JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

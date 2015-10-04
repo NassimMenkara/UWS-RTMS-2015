@@ -13,16 +13,16 @@
         <div id="InterventionSetup" ng-show="check(1)">
             <h2>Intervention Setup</h2>
 
-            Name: <input id="interventionName" type="text" ng-model="intervention_name" size="60"/><br />
-            Description: <textarea id="interventionDescription" rows="3" cols="40" ng-model="intervention_description"></textarea><br />
+            <b>Name:</b> <input id="interventionName" type="text" class="form-control" ng-model="intervention_name" size="60"/><br />
+            <b>Description:</b> <textarea id="interventionDescription" rows="3" cols="40" class="form-control" ng-model="intervention_description"></textarea><br />
 
 
-            Investigators: <span id="selectedInvestigators" ></span> <br />
+            <b>Investigators:</b> <span id="selectedInvestigators" ></span> <br />
             
             <button ng-click="setIndex(2)" class="btn-primary">Edit Investigators</button><br />
 
-            Tests: <br />
-            <select id="testSelect" size="8" onchange="checkTestSelect()">
+            <b>Tests:</b> <br />
+            <select id="testSelect" size="8" onchange="checkTestSelect()" class="form-control">
             </select><br />
             <button id="editTestBtn" onclick="editTest()" ng-click="setIndex(3)" class="btn-sm">Edit Test</button>
             <button id="deleteTestBtn" onclick="deleteTest()" class="btn-sm btn-danger">Delete Test</button><br /><br />
@@ -37,7 +37,7 @@
 
         <div id="Investigators" ng-show="check(2)" style="display: none;">
             <h2>Investigators</h2>
-            <select id="investigatorSelect" size="8" ng-model="investigator.multiSelect" multiple></select><br />
+            <select id="investigatorSelect" size="8" class="form-control" ng-model="investigator.multiSelect" multiple></select><br />
             <button onclick="addInvestigators()" ng-click="setIndex(1)" class="btn-sm btn-success">Save</button>
             <button ng-click="setIndex(1)" class="btn-sm">Back</button>
         </div>
@@ -45,9 +45,9 @@
         <div id="Tests" ng-show="check(3)" style="display: none;">
             <h2>Add/Edit Test</h2>
 
-            Name: <input id="testName" type="text" ng-model="test_name" size="60" /><br />
-            Description: <textarea id="testDescription" rows="3" cols="40" ng-model="test_description"></textarea><br />
-            <select id="questionSelect" size="8"></select><br />
+            <b>Name:</b> <input id="testName" type="text" class="form-control" ng-model="test_name" size="60" /><br />
+            <b>Description:</b> <textarea id="testDescription" rows="3" cols="40" class="form-control" ng-model="test_description"></textarea><br />
+            <select id="questionSelect" class="form-control" size="8"></select><br />
             <button onclick="editQuestion()" ng-click="setIndex(5)" class="btn-sm">Edit Question</button>
             <button id="deleteQuestionBtn" onclick="deleteQuestion()" class="btn-sm btn-danger">Delete Question</button><br /><br />
             <button onclick="createQuestion()" ng-click="setIndex(5)" class="btn-sm btn-primary">Create Question</button><br /><br />
@@ -58,9 +58,8 @@
         <div id="ExternalTest" ng-show="check(4)" style="display: none;">
             <h2>Add/Edit External Test</h2>
 
-            Choose External Test: <select id="externalTestList">
+            <b>Choose External Test:</b> <select id="externalTestList" class="form-control">
                 <option value="mockup">Mockup External Test</option>
-
             </select><br />
             <input type="checkbox" id="externalQuestion1" value="q1" checked disabled> Question 1 (Mandatory) <br>
             <input type="checkbox" id="externalQuestion2" value="q2"> Question 2 <br>
@@ -73,21 +72,21 @@
         <div id="AddQuestion" ng-show="check(5)" style="display: none;">
             <h2>Add/Edit Question</h2>
 
-            Question: <input id="questionTitle" type="text" ng-model="question_title" size="80" /><br />
-            Answer Type: <select id="answerType" onchange="questionTypeChange(null)">
-                <option value="1">Multiple Choice</option>
-                <option value="2">Multiple Answer</option>
-                <option value="3">Measurement</option>
-                <option value="4">Text Answer</option>
-            </select><br />
-            Answers: <br /><select id="answersSelect" size="8" ng-model="answers_select" multiple></select><br />
-            <button id="deleteAnswerBtn" onclick="deleteAnswer()" class="btn-sm btn-danger">Delete Answer</button><br />
-            <select id="measurementType">
+            <b>Question:</b> <input id="questionTitle" type="text" class="form-control" ng-model="question_title" size="80" /><br />
+            <b>Answer Type:</b> <select id="answerType" class="form-control" onchange="questionTypeChange(null)">
+                            <option value="1">Multiple Choice</option>
+                            <option value="2">Multiple Answer</option>
+                            <option value="3">Measurement</option>
+                            <option value="4">Text Answer</option>
+                         </select><br />
+            <b>Answers:</b> <br /><select id="answersSelect" size="8" class="form-control" ng-model="answers_select" multiple></select><br />
+            <button id="deleteAnswerBtn" onclick="deleteAnswer()" class="btn-sm btn-danger">Delete Answer</button><br /><br />
+            <select id="measurementType" class="form-control">
                 <option value="cm">cm</option>
                 <option value="m">m</option>
                 <option value="kg">kg</option>
             </select><br />
-            <input id="answer" type="text" ng-model="add_answer" size="40" /><br /><button id="addAnswerBtn" onclick="addAnswer()" class="btn-sm btn-primary">Add Answer</button><br /><br />
+            <input id="answer" type="text" class="form-control" ng-model="add_answer" size="40" /><br /><button id="addAnswerBtn" onclick="addAnswer()" class="btn-sm btn-primary">Add Answer</button><br /><br />
             <button onclick="saveQuestion()" ng-click="setIndex(3)" class="btn-sm btn-success">Save</button>
             <button onclick="backQuestion()" ng-click="setIndex(3)" class="btn-sm">Back</button>
         </div><br />

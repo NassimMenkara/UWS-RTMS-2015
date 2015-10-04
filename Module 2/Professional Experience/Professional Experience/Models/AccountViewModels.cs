@@ -206,4 +206,14 @@ namespace Professional_Experience.Models
         [Display(Name = "Email")]
         public string Email { get; set; }
     }
+
+    public class ExternalLoginViewModel
+    {
+        public string request { get; set; }
+        [Required]
+        public string username { get; set; }
+        [Required]
+        [DataType(DataType.Password)]
+        public string password { get; set; }
+    }
 }

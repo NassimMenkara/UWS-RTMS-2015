@@ -1,11 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
 namespace Professional_Experience.Models
 {
+    public class ReportViewModel
+    {
+        [Required]
+        public int Intervention { get; set; }
+        [Required]
+        public int FilterSelection { get; set; }
+        public string StartDate { get; set; }
+        public string EndDate { get; set; }
+    }
+
+    public class ReportTestModel
+    {
+        public int Id { get; set; }
+        public String Name { get; set; }
+        public String Description { get; set; }
+        public int CompletionCount { get; set; }
+
+
+
+    }
     //public class Intervention
     //{
     //    public String Intervention_Name { get; private set; }

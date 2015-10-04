@@ -28,7 +28,6 @@
                             case 1: //Multiple choice type
                                 @:<p><b>Question @i: @ViewBag.Questions[i - 1].Question_Title</b></p>
 
-
                                 for (int j = 1; j < ViewBag.Questions[i - 1].Answers.Count + 1; j++)
                                 {
                                     @:<input type="radio" name="@ViewBag.Questions[i - 1].Question_Id" value="@ViewBag.Questions[i - 1].Answers[j - 1]" ng-model="test[@ViewBag.Questions[i - 1].Question_Id]">@ViewBag.Questions[i - 1].Answers[j - 1]<br />
@@ -45,11 +44,11 @@
                                     }
                                 break;
                             case 3: //Measurement type
-                            @:<p><b>Question @i: @ViewBag.Questions[i - 1].Question_Title</b></p><input id="@ViewBag.Questions[i - 1].Question_Id" type="number" ng-model="test[@ViewBag.Questions[i - 1].Question_Id]" required /><br />
+                            @:<p><b>Question @i: @ViewBag.Questions[i - 1].Question_Title</b></p><input id="@ViewBag.Questions[i - 1].Question_Id" type="number" class="form-control" ng-model="test[@ViewBag.Questions[i - 1].Question_Id]" required /><br />
                                 break;
 
                             case 4: //Text type
-                            @:<p><b>Question @i: @ViewBag.Questions[i - 1].Question_Title</b></p><input id="@ViewBag.Questions[i - 1].Question_Id" type="text" ng-model="test[@ViewBag.Questions[i - 1].Question_Id]" required /><br />
+                            @:<p><b>Question @i: @ViewBag.Questions[i - 1].Question_Title</b></p><input id="@ViewBag.Questions[i - 1].Question_Id" type="text" class="form-control" ng-model="test[@ViewBag.Questions[i - 1].Question_Id]" required /><br />
                                 break;
                             default:
                                 break;

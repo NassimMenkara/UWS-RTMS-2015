@@ -7,11 +7,39 @@
 @section scripts{
     <script src="~/Javascript/ReportingApp.js"> </script>
     <script src="~/Javascript/jspdf.js"> </script>
+    <script src="~/Javascript/jspdf.plugin.autotable.js"> </script>
+    <script src="~/Javascript/jspdf.plugin.split_text_to_size.js"> </script>
+    <script src="~/Javascript/jspdf.plugin.standard_fonts_metrics.js"> </script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 }
+
 <h2>Reporting</h2>
 
-<p>Please select the report you would like to generate</p>
-
-Intervention Results Report: <button id="reportBtn" onclick="generatePDF()" class="btn-sm">Generate Report</button>
+<h4>Please select the report you would like to generate</h4>
+<div class="container" ng-app="ReportingApp">
+    <form ng-controller="ReportingController">
+        <div class="row">
+            <div class="col-md-3">
+                <b>Select an intervention:</b><br />
+                <select id="interventionSelect" size="8" ng-model="Report.Intervention" ng-change="interventionSelected()" class="form-control"></select><br />
+            </div>
+            <div class="col-md-6">
+                <p id="intervention" class="alert alert-info" role="alert"></p><br />
+            </div>
+        </div>
+        <b>Select a filter option:</b><br />
+        <div ng-class="radioSelected(1)" ng-click="setRadio(1)"> <!--All-->
+            <b> All</b>
+        </div><br />
+        <div ng-class="radioSelected(2)" ng-click="setRadio(2)"> <!--Date Range-->
+            <b>Date Range:</b> <br />
+            <b>Start Date:</b> <input type="text" id="startDate" class="form-control"><br />
+            <b>End Date:</b> <input type="text" id="endDate" class="form-control"><br />
+        </div><br />
+        <button id="reportBtn" ng-click="generatePDF()" class="btn-sm">Generate Report</button><br />
+        {{Report}}
+</form>
+    <iframe id="pdfPreview" width="396" height="352" src="" class="" style="display:none"> </iframe>
+</div>
 
 

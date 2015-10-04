@@ -1,0 +1,30 @@
+﻿@using Professional_Experience.Models
+@model ExternalLoginViewModel
+@{
+    ViewBag.Title = "ExternalTestIndex";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>External Test</h2>
+<p1>
+    @{
+        if (ViewBag.api_key == "false")
+        {
+            using (Html.BeginForm("SubmitExternalLogin", "Participant", FormMethod.Post))
+            {
+                <p1>Please Login:</p1><br />
+                <b>Username:</b>
+                @Html.TextBoxFor(m => m.username, new { @class = "form-control" })
+                <b>Password:</b>
+                @Html.TextBoxFor(m => m.password, new { @class = "form-control" })
+                <input type="submit" value="Log in" class="btn btn-default" />
+            }
+        }
+        else
+        {
+            <button id="externalTest" class="btn-sm btn-primary" onclick="location.href = 'http://127.0.0.1:8080/completeTest#?apiKey=@ViewBag.api_key';">Complete external test</button><br />
+            <button id="retrieveResults" class="btn-sm btn-primary" onclick="location.href = '@Url.Action("ExternalTestResultRetrieval", "Participant", new { trialId = @ViewBag.trialId, testId = @ViewBag.testId }, null)';">Retrieve Results</button><br />
+
+        }
+    }
+</p1>

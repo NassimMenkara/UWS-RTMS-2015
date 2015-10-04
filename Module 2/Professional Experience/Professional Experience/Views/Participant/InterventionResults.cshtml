@@ -27,7 +27,7 @@
                     <li><h3>Interventions</h3></li>
                     for (int i = 0; i < ViewBag.Interventions.Count; i++)
                     {
-                        <li><a href ng-click="setIndex(@i)">@ViewBag.Interventions[i].Intervention_Name</a></li>
+                        <li ng-class="setActive(@i)"><a href ng-click="setIndex(@i)">@ViewBag.Interventions[i].Intervention_Name</a></li>
                     }
                 }
 
@@ -49,7 +49,7 @@
                 int testId = ViewBag.Interventions[i].Tests[j].Test_Id;
                 if(testName == "Mockup External Test"){
                     //Need to edit here
-                    @:<button id="@testName" class="btn-sm btn-primary" onclick="location.href = '/Participant/CompleteTest/?trialId=@trialId&testId=@testId&testName=@testName';">@testName</button><br />
+                    @:<button id="@testName" class="btn-sm btn-primary" onclick="location.href = '/Participant/ExternalTestIndex/?trialId=@trialId&testId=@testId';">@testName</button><br />
                 }else{
                     @:<button id="@testName" class="btn-sm btn-primary" onclick="location.href = '/Participant/CompleteTest/?trialId=@trialId&testId=@testId&testName=@testName';">@testName</button><br />
                 }
