@@ -51,6 +51,27 @@ function createExternalTest()
     }
 }
 
+function saveTest() {
+    var testName = document.getElementById("testName").value;
+    var select = document.getElementById("testSelect");
+    var options = select.options;
+    var testIndex = getTestIndex(currentTestId);
+    var optionIndex = checkSelect(options, currentTestId);
+    if (optionIndex != -1) { //select already has test id
+        select.options[optionIndex].text = testName; //set test name again in case name was edited 
+    } else {                 //select doesn't have test id
+        var option = document.createElement("option");
+        option.value = currentTestId
+        option.text = testName;
+        select.add(option); //add new
+    }
+    intervention.Tests[testIndex].Test_Name = testName;
+    intervention.Tests[testIndex].Test_Description = document.getElementById("testDescription").value;
+    currentTestId = 0;
+    printMessage("Test has been saved", "success");
+    resetTestView();
+}
+
 function editTest()
 {
     var testSelect = document.getElementById("testSelect");
@@ -137,28 +158,6 @@ function deleteQuestion() {
         questionSelect.remove(questionSelect.selectedIndex);
         printMessage("Question has been deleted", "fail");
     }
-}
-
-function saveTest()
-{
-    var testName = document.getElementById("testName").value;
-    var select = document.getElementById("testSelect");
-    var options = select.options;
-    var testIndex = getTestIndex(currentTestId);
-    var optionIndex = checkSelect(options, currentTestId);
-    if (optionIndex != -1) { //select already has test id
-        select.options[optionIndex].text = testName; //set test name again in case name was edited 
-    } else {                 //select doesn't have test id
-        var option = document.createElement("option");
-        option.value = currentTestId
-        option.text = testName;
-        select.add(option); //add new
-    }
-    intervention.Tests[testIndex].Test_Name = testName;
-    intervention.Tests[testIndex].Test_Description = document.getElementById("testDescription").value;
-    currentTestId = 0;
-    printMessage("Test has been saved", "success");
-    resetTestView();
 }
 
 function saveExternalTest()
@@ -516,6 +515,56 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
               listInvestigators(obj);
           }, function (error) {
         });
+    }
+
+    $scope.validateIntervention = function () {
+        var interventionInvalid = false;
+        if ($scope.intervention_name == undefined || $scope.intervention_name == "") {
+            interventionInvalid = true;
+        }
+        if ($scope.intervention_description == undefined || $scope.intervention_description == "") {
+            interventionInvalid = true;
+        }
+        if (document.getElementById("testSelect").length < 1) { //an intervention must have at least one test
+            interventionInvalid = true;
+        }
+        return interventionInvalid;
+    }
+
+    $scope.validateTest = function () {
+        var testInvalid = false;
+        if ($scope.test_name == undefined || $scope.test_name == "") {
+            testInvalid = true;
+        }
+        if ($scope.test_description == undefined || $scope.test_description == "") {
+            testInvalid = true;
+        }
+        if (document.getElementById("questionSelect").length < 1) { //a test must have at least a question
+            testInvalid = true;
+        }
+        return testInvalid;
+    }
+
+    $scope.validateQuestion = function () {
+        var questionInvalid = false;
+        if ($scope.question_title == undefined || $scope.question_title == "") {
+            questionInvalid = true;
+        }
+        switch(document.getElementById("answerType").selectedIndex) { 
+            case 0:
+                if (document.getElementById("answersSelect").length < 2) { //a test must have at least a question
+                    questionInvalid = true;
+                }
+                break;
+            case 1:
+                if (document.getElementById("answersSelect").length < 2) { //a test must have at least a question
+                    questionInvalid = true;
+                }
+                break;
+            default:
+                break;
+        }
+        return questionInvalid;
     }
 });
 //-------------------------------------------------------------------------------------------------------------

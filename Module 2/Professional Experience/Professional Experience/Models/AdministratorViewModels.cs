@@ -23,9 +23,15 @@ namespace Professional_Experience.Models
         public String Name { get; set; }
         public String Description { get; set; }
         public int CompletionCount { get; set; }
+        public List<ReportQuestionModel> Questions { get; set; } 
+    }
 
-
-
+    public class ReportQuestionModel
+    {
+        public int Id { get; set; }
+        public String Question { get; set; }
+        public int Question_Type { get; set; }
+        public List<KeyValuePair<String, int>> Answers { get; set; }
     }
     //public class Intervention
     //{

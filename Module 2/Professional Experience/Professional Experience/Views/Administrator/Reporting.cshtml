@@ -6,10 +6,17 @@
 
 @section scripts{
     <script src="~/Javascript/ReportingApp.js"> </script>
-    <script src="~/Javascript/jspdf.js"> </script>
-    <script src="~/Javascript/jspdf.plugin.autotable.js"> </script>
-    <script src="~/Javascript/jspdf.plugin.split_text_to_size.js"> </script>
-    <script src="~/Javascript/jspdf.plugin.standard_fonts_metrics.js"> </script>
+    <script src="~/Scripts/jspdf.js"> </script>
+    <script src="~/Scripts/jspdf.plugin.autotable.js"> </script>
+    <script src="~/Scripts/jspdf.plugin.split_text_to_size.js"> </script>
+    <script src="~/Scripts/jspdf.plugin.standard_fonts_metrics.js"> </script>
+    <script src="~/Scripts/jspdf.plugin.addimage.js"> </script>
+    <script src="~/Scripts/jspdf.plugin.png_support.js"> </script>
+    <script src="~/Scripts/jquery.jqplot.min.js"></script>
+    <script src="~/Scripts/jquery.jqplot.pieRenderer.min.js"></script>
+    <script src="~/Scripts/png.js"></script>
+    <script src="~/Scripts/zlib.js"></script>
+    <link rel="stylesheet" type="text/css" href="~/Scripts/jquery.jqplot.css" />
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 }
 
@@ -33,13 +40,14 @@
         </div><br />
         <div ng-class="radioSelected(2)" ng-click="setRadio(2)"> <!--Date Range-->
             <b>Date Range:</b> <br />
-            <b>Start Date:</b> <input type="text" id="startDate" class="form-control"><br />
-            <b>End Date:</b> <input type="text" id="endDate" class="form-control"><br />
+            <b>Start Date:</b> <input type="text" id="startDate" datepicker="" ng-model="Report.StartDate" style="background-color:white" class="form-control" readonly><br />
+            <b>End Date:</b> <input type="text" id="endDate" datepicker="" ng-model="Report.EndDate" style="background-color:white" class="form-control" readonly><br />
         </div><br />
-        <button id="reportBtn" ng-click="generatePDF()" class="btn-sm">Generate Report</button><br />
+        <button id="reportBtn" ng-click="generatePDF()" ng-disabled="validateForm()" class="btn btn-primary">Generate Report</button><br />
         {{Report}}
 </form>
-    <iframe id="pdfPreview" width="396" height="352" src="" class="" style="display:none"> </iframe>
+    <iframe id="pdfPreview" width="396" height="352" src="" class="" style="display:none;"> </iframe>
+    <div id="chartdiv" style="height: 400px; width: 300px; position: absolute; top: -500px; visibility: hidden; "></div>
 </div>
 
 

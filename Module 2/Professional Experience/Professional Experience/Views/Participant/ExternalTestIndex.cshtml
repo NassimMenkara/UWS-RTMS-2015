@@ -10,7 +10,7 @@
     @{
         if (ViewBag.api_key == "false")
         {
-            using (Html.BeginForm("SubmitExternalLogin", "Participant", FormMethod.Post))
+            using (Html.BeginForm("SubmitExternalLogin", "Participant", new { testId = @ViewBag.testId }, FormMethod.Post, null))
             {
                 <p1>Please Login:</p1><br />
                 <b>Username:</b>

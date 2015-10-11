@@ -9,11 +9,11 @@
     <script src="~/Javascript/InterventionSetupApp.js"> </script>
 }
 <div ng-app="InterventionSetupApp" ng-controller="InterventionSetupController">
-    <form>
+    <form name="interventionForm">
         <div id="InterventionSetup" ng-show="check(1)">
             <h2>Intervention Setup</h2>
 
-            <b>Name:</b> <input id="interventionName" type="text" class="form-control" ng-model="intervention_name" size="60"/><br />
+            <b>Name:</b> <input id="interventionName" type="text" class="form-control" ng-model="intervention_name" size="60" ng-required="intervention_name"/><br />
             <b>Description:</b> <textarea id="interventionDescription" rows="3" cols="40" class="form-control" ng-model="intervention_description"></textarea><br />
 
 
@@ -29,7 +29,7 @@
             <button onclick="createTest()" ng-click="setIndex(3)" class="btn-sm btn-primary">Create Test</button>
             <button onclick="createExternalTest()" ng-click="setIndex(4)" class="btn-sm btn-default">Create/Edit External Test</button><br /><br />
 
-            <button ng-click="submitIntervention()" class="btn-sm btn-success">Save Intervention</button>
+            <button ng-click="submitIntervention()" class="btn btn-primary" ng-disabled="validateIntervention()">Save Intervention</button>
             <input onclick="location.reload()" type="reset" value="Reset" class="btn-sm btn-default" />
 
 
@@ -45,13 +45,13 @@
         <div id="Tests" ng-show="check(3)" style="display: none;">
             <h2>Add/Edit Test</h2>
 
-            <b>Name:</b> <input id="testName" type="text" class="form-control" ng-model="test_name" size="60" /><br />
+            <b>Name:</b> <input id="testName" type="text" class="form-control" ng-model="test_name" size="60"/><br />
             <b>Description:</b> <textarea id="testDescription" rows="3" cols="40" class="form-control" ng-model="test_description"></textarea><br />
             <select id="questionSelect" class="form-control" size="8"></select><br />
             <button onclick="editQuestion()" ng-click="setIndex(5)" class="btn-sm">Edit Question</button>
             <button id="deleteQuestionBtn" onclick="deleteQuestion()" class="btn-sm btn-danger">Delete Question</button><br /><br />
             <button onclick="createQuestion()" ng-click="setIndex(5)" class="btn-sm btn-primary">Create Question</button><br /><br />
-            <button onclick="saveTest()" ng-click="setIndex(1)" class="btn-sm btn-success">Save</button>
+            <button onclick="saveTest()" ng-click="setIndex(1)" ng-disabled="validateTest()" class="btn btn-primary">Save</button>
             <button onclick="backTest()" ng-click="setIndex(1)" class="btn-sm">Back</button>
         </div>
 
@@ -80,14 +80,14 @@
                             <option value="4">Text Answer</option>
                          </select><br />
             <b>Answers:</b> <br /><select id="answersSelect" size="8" class="form-control" ng-model="answers_select" multiple></select><br />
-            <button id="deleteAnswerBtn" onclick="deleteAnswer()" class="btn-sm btn-danger">Delete Answer</button><br /><br />
+            <button id="deleteAnswerBtn" onclick="deleteAnswer()" ng-disabled="!answers_select" class="btn-sm btn-danger">Delete Answer</button><br /><br />
             <select id="measurementType" class="form-control">
                 <option value="cm">cm</option>
                 <option value="m">m</option>
                 <option value="kg">kg</option>
             </select><br />
             <input id="answer" type="text" class="form-control" ng-model="add_answer" size="40" /><br /><button id="addAnswerBtn" onclick="addAnswer()" class="btn-sm btn-primary">Add Answer</button><br /><br />
-            <button onclick="saveQuestion()" ng-click="setIndex(3)" class="btn-sm btn-success">Save</button>
+            <button onclick="saveQuestion()" ng-click="setIndex(3)" ng-disabled="validateQuestion()" class="btn btn-primary">Save</button>
             <button onclick="backQuestion()" ng-click="setIndex(3)" class="btn-sm">Back</button>
         </div><br />
 

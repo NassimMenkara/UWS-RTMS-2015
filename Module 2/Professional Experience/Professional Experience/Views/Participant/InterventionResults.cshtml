@@ -60,5 +60,12 @@
         }
 }
      </div>
+    @{
+    if (ViewBag.Interventions.Count == 0)
+    {
+        <h4><b>You are currently not assigned to any interventions</b></h4>
+    } 
+    }
+
 
 </div>

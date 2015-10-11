@@ -72,20 +72,60 @@ namespace Professional_Experience.Controllers
                     test.Id = Convert.ToInt32(nwReader["Id"].ToString());
                     test.Name = nwReader["Name"].ToString();
                     test.Description = nwReader["Description"].ToString();
-                    SqlConnection testConn = new SqlConnection(connectionString);
-                    testConn.Open();
+                    var questionSql = "";
                     if (m.FilterSelection == 1){
                         sql = "SELECT Count(Id) FROM Trial_Participant_Intervention_Area_Test WHERE Intervention_Area_Test_Id = '" + test.Id + "';";
+                        questionSql = "SELECT Answer, COUNT(*) AS AnswerCount, Intervention_Area_Test_Id, Intervention_Area_Test_Question.Id, Question, Intervention_Area_Test_Question.Question_Type FROM Intervention_Area_Test_Question_Answer INNER JOIN Intervention_Area_Test_Question ON Intervention_Area_Test_Question_Id = Intervention_Area_Test_Question.Id AND Intervention_Area_Test_Id = '" + test.Id + "' AND (Question_Type = '1' OR Question_Type = '2') GROUP BY Answer, Intervention_Area_Test_Id , Intervention_Area_Test_Question.Id, Question, Intervention_Area_Test_Question.Question_Type;";
                     }
                     else if (m.FilterSelection == 2)
                     {
                         String startDate = DateTime.ParseExact(m.StartDate, "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
                         String endDate = DateTime.ParseExact(m.EndDate, "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
                         sql = "SELECT Count(Id) FROM Trial_Participant_Intervention_Area_Test WHERE Trial_Participant_Intervention_Area_Test.DateTaken BETWEEN '" + startDate + "' AND '" + endDate + "' AND Intervention_Area_Test_Id = '" + test.Id + "';";
+                        questionSql = "SELECT Answer, COUNT(*) AS AnswerCount, Intervention_Area_Test_Question.Intervention_Area_Test_Id, Intervention_Area_Test_Question.Id, Question, Intervention_Area_Test_Question.Question_Type FROM Intervention_Area_Test_Question_Answer INNER JOIN Intervention_Area_Test_Question ON Intervention_Area_Test_Question_Id = Intervention_Area_Test_Question.Id INNER JOIN Trial_Participant_Intervention_Area_Test ON Trial_Participant_Intervention_Area_Test_Id = Trial_Participant_Intervention_Area_Test.Id WHERE Trial_Participant_Intervention_Area_Test.DateTaken BETWEEN '" + startDate + "' AND '" + endDate + "' AND Intervention_Area_Test_Question.Intervention_Area_Test_Id = '" + test.Id + "' AND (Question_Type = '1' OR Question_Type = '2') GROUP BY Answer, Intervention_Area_Test_Question.Intervention_Area_Test_Id , Intervention_Area_Test_Question.Id, Question, Intervention_Area_Test_Question.Question_Type;";
                     }
+                    SqlConnection testConn = new SqlConnection(connectionString);
+                    testConn.Open();
                     SqlCommand testCmd = new SqlCommand(sql, testConn);
                     test.CompletionCount = (int)testCmd.ExecuteScalar();
                     testConn.Close();
+                    // SQL statement retrieves all multiple choice or multi answers and groups them to get the count for each answer
+                    SqlConnection questionConn = new SqlConnection(connectionString);
+                    questionConn.Open();
+                    SqlCommand questionCmd = new SqlCommand(questionSql, questionConn);
+                    SqlDataReader questionReader = questionCmd.ExecuteReader();
+                    List<ReportQuestionModel> questions = new List<ReportQuestionModel>();
+                    var currentId = 0;
+                    var questionAdded = false;
+                    ReportQuestionModel question = new ReportQuestionModel();
+                    while(questionReader.Read())
+                    {
+                        if (currentId == Convert.ToInt32(questionReader["Id"].ToString())) //handles multi-answer questions
+                        {
+                            question.Answers.Add(new KeyValuePair<string, int>(questionReader["Answer"].ToString(), Convert.ToInt32(questionReader["AnswerCount"].ToString())));
+                        }
+                        else
+                        {
+                            if (currentId != 0)
+                            {
+                                questions.Add(question); //Add question
+                                question = new ReportQuestionModel();
+                                questionAdded = true;
+                            }
+                            question.Id = Convert.ToInt32(questionReader["Id"].ToString());
+                            currentId = question.Id;
+                            question.Question = questionReader["Question"].ToString();
+                            question.Question_Type = Convert.ToInt32(questionReader["Question_Type"].ToString());
+                            question.Answers = new List<KeyValuePair<String, int>>();
+                            question.Answers.Add(new KeyValuePair<String, int>(questionReader["Answer"].ToString(), Convert.ToInt32(questionReader["AnswerCount"].ToString())));
+                            questionAdded = false;
+                        }
+                    }
+                    if(!questionAdded)
+                        questions.Add(question);
+                    questionReader.Close();
+                    questionConn.Close();
+                    test.Questions = new List<ReportQuestionModel>(questions);
                     tests.Add(test);
                 }
                 nwReader.Close();
