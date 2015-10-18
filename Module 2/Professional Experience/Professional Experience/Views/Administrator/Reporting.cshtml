@@ -16,6 +16,7 @@
     <script src="~/Scripts/jquery.jqplot.pieRenderer.min.js"></script>
     <script src="~/Scripts/png.js"></script>
     <script src="~/Scripts/zlib.js"></script>
+    <script src="~/Scripts/FileSaver.js"></script>
     <link rel="stylesheet" type="text/css" href="~/Scripts/jquery.jqplot.css" />
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 }
@@ -24,30 +25,45 @@
 
 <h4>Please select the report you would like to generate</h4>
 <div class="container" ng-app="ReportingApp">
-    <form ng-controller="ReportingController">
+    <form id="outer" ng-controller="ReportingController">
         <div class="row">
             <div class="col-md-3">
                 <b>Select an intervention:</b><br />
-                <select id="interventionSelect" size="8" ng-model="Report.Intervention" ng-change="interventionSelected()" class="form-control"></select><br />
+                <input type="text" ng-model="search" class="form-control" placeholder="Search for intervention"/>
+                <select id="interventionSelect" name="interventionSelect" size="8" ng-model="Report.Intervention" ng-options="intervention.Name for intervention in interventions | filter:search" ng-change="interventionSelected()" class="form-control"></select><br />
             </div>
             <div class="col-md-6">
+                <br />
                 <p id="intervention" class="alert alert-info" role="alert"></p><br />
             </div>
         </div>
         <b>Select a filter option:</b><br />
-        <div ng-class="radioSelected(1)" ng-click="setRadio(1)"> <!--All-->
+        <div ng-class="radioSelected(1)" ng-click="setRadio(1)">
+            <!--All-->
             <b> All</b>
         </div><br />
-        <div ng-class="radioSelected(2)" ng-click="setRadio(2)"> <!--Date Range-->
+        <div ng-class="radioSelected(2)" ng-click="setRadio(2)">
+            <!--Date Range-->
             <b>Date Range:</b> <br />
             <b>Start Date:</b> <input type="text" id="startDate" datepicker="" ng-model="Report.StartDate" style="background-color:white" class="form-control" readonly><br />
             <b>End Date:</b> <input type="text" id="endDate" datepicker="" ng-model="Report.EndDate" style="background-color:white" class="form-control" readonly><br />
         </div><br />
-        <button id="reportBtn" ng-click="generatePDF()" ng-disabled="validateForm()" class="btn btn-primary">Generate Report</button><br />
+        <b>Generate Report:</b>
+        <div style="max-width:400px">
+            <div class="btn-group btn-block">
+                <button id="reportBtn" ng-click="generatePDF()" ng-disabled="validateForm()" class="col-sm-10 col-md-11 btn btn-primary btn-lg">Preview Report</button>
+                <button class="col-sm-2 col-md-1 btn btn-primary btn-lg dropdown-toggle" data-toggle="dropdown" ng-disabled="validateForm()">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu btn-block">
+                    <li><a ng-click="downloadPDF()" href="#">Download Report</a></li>
+                </ul>
+            </div><br /><br />
+        </div>
         {{Report}}
-</form>
-    <iframe id="pdfPreview" width="396" height="352" src="" class="" style="display:none;"> </iframe>
-    <div id="chartdiv" style="height: 400px; width: 300px; position: absolute; top: -500px; visibility: hidden; "></div>
+    </form>
 </div>
+<iframe id="pdfPreview" width="800" height="700" src="" class="" style="display:none;"> </iframe>
+<div id="chartdiv" style="height: 400px; width: 300px; position: absolute; top: -500px; visibility: hidden; "></div>
 
 

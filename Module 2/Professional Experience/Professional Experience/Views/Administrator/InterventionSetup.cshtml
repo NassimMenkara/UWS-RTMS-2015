@@ -10,54 +10,79 @@
 }
 <div ng-app="InterventionSetupApp" ng-controller="InterventionSetupController">
     <form name="interventionForm">
-        <div id="InterventionSetup" ng-show="check(1)">
+        <br />
+        <div id="InterventionSetup" ng-show="check(1)" style="max-width:400px">
             <h2>Intervention Setup</h2>
-
-            <b>Name:</b> <input id="interventionName" type="text" class="form-control" ng-model="intervention_name" size="60" ng-required="intervention_name"/><br />
-            <b>Description:</b> <textarea id="interventionDescription" rows="3" cols="40" class="form-control" ng-model="intervention_description"></textarea><br />
+            <ol class="breadcrumb">
+                <li><a class="btn btn-primary" href="#"><i class="glyphicon glyphicon-home"></i></a></li>
+            </ol>
+            <b>Please create your intervention:</b><br />
+            <b>Name:</b> <input id="interventionName" type="text" class="form-control input-lg" ng-model="intervention_name" size="60" ng-required="intervention_name" /><br />
+            <b>Description:</b> <textarea id="interventionDescription" rows="3" cols="40" class="form-control input-lg" ng-model="intervention_description"></textarea><br />
 
 
             <b>Investigators:</b> <span id="selectedInvestigators" ></span> <br />
             
-            <button ng-click="setIndex(2)" class="btn-primary">Edit Investigators</button><br />
+            <button ng-click="setIndex(2)" class="btn btn-primary btn-lg btn-block">Add/Edit Investigators</button><br />
 
             <b>Tests:</b> <br />
-            <select id="testSelect" size="8" onchange="checkTestSelect()" class="form-control">
-            </select><br />
-            <button id="editTestBtn" onclick="editTest()" ng-click="setIndex(3)" class="btn-sm">Edit Test</button>
-            <button id="deleteTestBtn" onclick="deleteTest()" class="btn-sm btn-danger">Delete Test</button><br /><br />
-            <button onclick="createTest()" ng-click="setIndex(3)" class="btn-sm btn-primary">Create Test</button>
-            <button onclick="createExternalTest()" ng-click="setIndex(4)" class="btn-sm btn-default">Create/Edit External Test</button><br /><br />
+            <select id="testSelect" size="8" onchange="testSelectChange()" class="form-control" ng-disabled="checkSelectForOptions('testSelect')" disabled></select><br />
+            <button id="editTestBtn" ng-click="editTest()" class="btn btn-default btn-lg btn-block" style="display:none;">Edit Test</button><br />
+            <button id="deleteTestBtn" ng-click="deleteTest()" class="btn btn-danger btn-lg btn-block" style="display:none;">Delete Test</button><br />
+            <div class="btn-group btn-block">
+                <button ng-click="createTest()" class="col-sm-10 col-md-11 btn btn-primary btn-lg">Create Test</button>
+                <button class="col-sm-2 col-md-1 btn btn-primary btn-lg dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu btn-block">
+                    <li><a ng-click="createExternalTest()" href="#">Create/Edit External Test</a></li>
+                </ul>
+            </div><br /><br />
 
-            <button ng-click="submitIntervention()" class="btn btn-primary" ng-disabled="validateIntervention()">Save Intervention</button>
-            <input onclick="location.reload()" type="reset" value="Reset" class="btn-sm btn-default" />
+            <button ng-click="submitIntervention()" class="btn btn-success btn-lg btn-block" ng-disabled="validateIntervention()">Save Intervention</button>
+            <!--<input onclick="location.reload()" type="reset" value="Reset" class="btn-sm btn-default" />-->
 
 
         </div>
 
-        <div id="Investigators" ng-show="check(2)" style="display: none;">
+        <div id="Investigators" ng-show="check(2)" style="display: none; max-width:400px;" >
             <h2>Investigators</h2>
-            <select id="investigatorSelect" size="8" class="form-control" ng-model="investigator.multiSelect" multiple></select><br />
-            <button onclick="addInvestigators()" ng-click="setIndex(1)" class="btn-sm btn-success">Save</button>
-            <button ng-click="setIndex(1)" class="btn-sm">Back</button>
+            <ol class="breadcrumb">
+                <li><a href ng-click="setIndex(1)"><i class="glyphicon glyphicon-home"></i></a></li>
+                <li><a class="btn btn-primary" href>Investigators</a></li>
+            </ol>
+            <b>Please select investigators:</b><br />
+            <input type="text" ng-model="search" class="form-control" placeholder="Search for investigator" />
+            <select id="investigatorSelect" size="8" class="form-control" ng-model="investigator.multiSelect" ng-options="investigator.First_Name + ' ' + investigator.Last_Name + ' ' + investigator.Institution for investigator in investigators | filter:search" ng-disabled="checkSelectForOptions('investigatorSelect')" disabled multiple></select><br />
+            <button ng-click="addInvestigators()" class="btn btn-success btn-lg btn-block">Save</button>
+            <button ng-click="setIndex(1)" class="btn btn-default btn-lg btn-block">Back</button>
+            {{investigator.multiSelect}}
         </div>
 
-        <div id="Tests" ng-show="check(3)" style="display: none;">
+        <div id="Tests" ng-show="check(3)" style="display: none; max-width: 400px;">
             <h2>Add/Edit Test</h2>
-
-            <b>Name:</b> <input id="testName" type="text" class="form-control" ng-model="test_name" size="60"/><br />
-            <b>Description:</b> <textarea id="testDescription" rows="3" cols="40" class="form-control" ng-model="test_description"></textarea><br />
-            <select id="questionSelect" class="form-control" size="8"></select><br />
-            <button onclick="editQuestion()" ng-click="setIndex(5)" class="btn-sm">Edit Question</button>
-            <button id="deleteQuestionBtn" onclick="deleteQuestion()" class="btn-sm btn-danger">Delete Question</button><br /><br />
-            <button onclick="createQuestion()" ng-click="setIndex(5)" class="btn-sm btn-primary">Create Question</button><br /><br />
-            <button onclick="saveTest()" ng-click="setIndex(1)" ng-disabled="validateTest()" class="btn btn-primary">Save</button>
-            <button onclick="backTest()" ng-click="setIndex(1)" class="btn-sm">Back</button>
+            <ol class="breadcrumb">
+                <li><a href ng-click="backTest()"><i class="glyphicon glyphicon-home"></i></a></li>
+                <li><a class="btn btn-primary" href>Add/Edit Test</a></li>
+            </ol>
+            <b>Please create your test:</b><br />
+            <b>Name:</b> <input id="testName" type="text" class="form-control input-lg" ng-model="test_name" size="60" /><br />
+            <b>Description:</b> <textarea id="testDescription" rows="3" cols="40" class="form-control input-lg" ng-model="test_description"></textarea><br />
+            <b>Questions:</b><br />
+            <select id="questionSelect" class="form-control" size="8" onchange="questionSelectChange()" ng-disabled="checkSelectForOptions('questionSelect')" disabled></select><br />
+            <button id="editQuestionBtn" ng-click="editQuestion()" style="display:none;" class="btn btn-default btn-lg btn-block">Edit Question</button>
+            <button id="deleteQuestionBtn" ng-click="deleteQuestion()" style="display:none;" class="btn btn-danger btn-lg btn-block">Delete Question</button><br /><br />
+            <button ng-click="createQuestion()" class="btn btn-primary btn-lg btn-block">Create Question</button><br /><br />
+            <button ng-click="saveTest()" ng-disabled="validateTest()" class="btn btn-success btn-lg btn-block">Save</button>
+            <button ng-click="backTest()" class="btn btn-default btn-lg btn-block">Back</button>
         </div>
 
-        <div id="ExternalTest" ng-show="check(4)" style="display: none;">
+        <div id="ExternalTest" ng-show="check(4)" style="display: none; max-width: 400px;">
             <h2>Add/Edit External Test</h2>
-
+            <ol class="breadcrumb">
+                <li><a href ng-click="discaredExternalTest()"><i class="glyphicon glyphicon-home"></i></a></li>
+                <li><a class="btn btn-primary" href>Add/Edit External Test</a></li>
+            </ol>
             <b>Choose External Test:</b> <select id="externalTestList" class="form-control">
                 <option value="mockup">Mockup External Test</option>
             </select><br />
@@ -65,34 +90,38 @@
             <input type="checkbox" id="externalQuestion2" value="q2"> Question 2 <br>
             <input type="checkbox" id="externalScore1" value="s1"> Score 1 <br>
             <input type="checkbox" id="externalScore2" value="s2"> Score 2 <br>
-            <button onclick="saveExternalTest()" ng-click="setIndex(1)" class="btn-sm btn-success">Save</button>
-            <button onclick="discaredExternalTest()" ng-click="setIndex(1)" class="btn-sm">Back</button>
+            <button ng-click="saveExternalTest()" class="btn btn-success btn-lg btn-block">Save</button>
+            <button ng-click="discaredExternalTest()" class="btn btn-default btn-lg btn-block">Back</button>
         </div>
 
-        <div id="AddQuestion" ng-show="check(5)" style="display: none;">
+        <div id="AddQuestion" ng-show="check(5)" style="display: none; max-width: 400px;">
             <h2>Add/Edit Question</h2>
-
-            <b>Question:</b> <input id="questionTitle" type="text" class="form-control" ng-model="question_title" size="80" /><br />
-            <b>Answer Type:</b> <select id="answerType" class="form-control" onchange="questionTypeChange(null)">
-                            <option value="1">Multiple Choice</option>
+            <ol class="breadcrumb">
+                <li><a href ng-click="backQuestion(); backTest()"><i class="glyphicon glyphicon-home"></i></a></li>
+                <li><a href ng-click="backQuestion()">Add/Edit Test</a></li>
+                <li><a class="btn btn-primary" href>Add/Edit Question</a></li>
+            </ol>
+            <b>Please create your question:</b><br />
+            <b>Question:</b> <input id="questionTitle" type="text" class="form-control input-lg" ng-model="question_title" size="80" placeholder="Question you want to ask"/><br />
+            <b>Answer Type:</b> <select id="answerType" class="form-control input-lg" onchange="questionTypeChange(null)" ng-model="question_type">
+                            <option value="1" ng-selected="true">Multiple Choice</option>
                             <option value="2">Multiple Answer</option>
                             <option value="3">Measurement</option>
                             <option value="4">Text Answer</option>
                          </select><br />
-            <b>Answers:</b> <br /><select id="answersSelect" size="8" class="form-control" ng-model="answers_select" multiple></select><br />
-            <button id="deleteAnswerBtn" onclick="deleteAnswer()" ng-disabled="!answers_select" class="btn-sm btn-danger">Delete Answer</button><br /><br />
-            <select id="measurementType" class="form-control">
+            <b>Answers:</b> <br /><select id="answersSelect" size="8" class="form-control" onchange="answerSelectChange()" ng-disabled="checkSelectForOptions('answersSelect')" disabled></select><br />
+            <button id="deleteAnswerBtn" ng-click="deleteAnswer()" style="display:none;" class="btn btn-danger btn-lg btn-block">Delete Answer</button><br />
+            <select id="measurementType" class="form-control input-lg">
                 <option value="cm">cm</option>
                 <option value="m">m</option>
                 <option value="kg">kg</option>
             </select><br />
-            <input id="answer" type="text" class="form-control" ng-model="add_answer" size="40" /><br /><button id="addAnswerBtn" onclick="addAnswer()" class="btn-sm btn-primary">Add Answer</button><br /><br />
-            <button onclick="saveQuestion()" ng-click="setIndex(3)" ng-disabled="validateQuestion()" class="btn btn-primary">Save</button>
-            <button onclick="backQuestion()" ng-click="setIndex(3)" class="btn-sm">Back</button>
+            <input id="answer" type="text" class="form-control input-lg" ng-model="add_answer" size="40" placeholder="An Answer"/><br /><button id="addAnswerBtn" ng-click="addAnswer()" class="btn btn-primary btn-lg btn-block">Add Answer</button><br /><br />
+            <button ng-click="saveQuestion()" ng-disabled="validateQuestion()" class="btn btn-success btn-lg btn-block">Save</button>
+            <button ng-click="backQuestion()" class="btn btn-default btn-lg btn-block">Back</button>
         </div><br />
 
         <span id="message" class="success"></span><br /><br />
-
         {{index}}<br />
         {{interventionObj}}
 

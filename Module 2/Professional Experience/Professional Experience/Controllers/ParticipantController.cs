@@ -26,14 +26,40 @@ namespace Professional_Experience.Controllers
         {
             return View();
         }
+        public PX_Model.Participant GetCurrentParticipant
+        {
+            get
+            {
+                string username = User.Identity.Name;
+                var person = _db.People.FirstOrDefault(p => p.Username == username);
+                return person.Participants.ElementAt(0);
+            }
+        }
 
-        public ActionResult InterventionResults()
+        public ActionResult MyTrials()
+        {
+            var m = new List<Professional_Experience.Models.MyTrialViewModel>();
+            var trialParticipants = _db.Trial_Participant.Where(tp => tp.Participant_Id == GetCurrentParticipant.Id);
+
+            foreach (var tp in trialParticipants)
+            {
+                var model = new Professional_Experience.Models.MyTrialViewModel();
+                model.TrialId = (int)tp.Trial_Id;
+                model.TrialName = tp.Trial.Name;
+                model.TrialDescription = tp.Trial.Description;
+                m.Add(model);
+            }
+
+            return View(m.AsEnumerable());
+        }
+        public ActionResult InterventionResults(int trialId)
         {
             String username = System.Web.HttpContext.Current.User.Identity.Name;
             String connectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
             SqlConnection conn = new SqlConnection(connectionString);
             conn.Open();
-            String sql = "SELECT * FROM Trial INNER JOIN Trial_Participant ON Trial_Participant.Trial_Id = Trial.Id INNER JOIN Participant ON Trial_Participant.Participant_Id = Participant.Id INNER JOIN Person ON Participant.Person_Id = Person.Id AND Person.Username = '" + username + "';";
+            //String sql = "SELECT * FROM Trial INNER JOIN Trial_Participant ON Trial_Participant.Trial_Id = Trial.Id INNER JOIN Participant ON Trial_Participant.Participant_Id = Participant.Id INNER JOIN Person ON Participant.Person_Id = Person.Id AND Person.Username = '" + username + "';";
+            String sql = "SELECT * FROM Trial WHERE Id = '" + trialId + "';";
             SqlCommand cmd = new SqlCommand(sql, conn);
             SqlDataReader nwReader = cmd.ExecuteReader();
             while (nwReader.Read())

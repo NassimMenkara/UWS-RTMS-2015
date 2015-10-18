@@ -11,12 +11,24 @@ document.getElementById("startDate").style.cursor = "pointer";
 document.getElementById("endDate").style.cursor = "pointer";
 
 
+
+function selected() {
+    alert($('#interventionSelect').val());
+    var scope = angular.element($("#outer")).scope();
+    scope.$apply(function () {
+        scope.Report.intervention = scope.interventions[$('#interventionSelect').val()];
+
+    });
+}
+
 //--------------------------------------------------AngularJS--------------------------------------------------
 var ReportingApp = angular.module('ReportingApp', []);
+angular.module('yourModule', []);
 
 ReportingApp.controller('ReportingController', function ($scope, $http) {
     var y = 0;
     var pages = 0;
+    $scope.interventions = [];
     $scope.Report = {};
     $scope.Report.FilterSelection = 1;
     getInterventions();
@@ -38,7 +50,27 @@ ReportingApp.controller('ReportingController', function ($scope, $http) {
 
         }, function (error) {
         });
+    }
 
+    $scope.downloadPDF = function () {
+        console.log($scope.Report);
+        $http.post('/Administrator/GenerateReport', JSON.stringify($scope.Report)).then(function (response) {
+            if (response.data != "fail") {
+                //Get reporting data from server and structure it into PDF
+                console.log(response.data);
+                var tests = response.data;
+                console.log(JSON.stringify(tests[0].Questions[0].Answers));
+                var doc = createPDF(tests);
+                //document.getElementById('pdfPreview').style.display = "block";
+                doc.output('save', 'RTMS-Intervention-Report.pdf');
+                //document.getElementById('pdfPreview').src = doc.output('datauristring');
+            } else {
+                alert("Failed: all fields are required")
+            }
+
+
+        }, function (error) {
+        });
     }
 
     function getInterventions() {
@@ -48,18 +80,15 @@ ReportingApp.controller('ReportingController', function ($scope, $http) {
               $scope.interventions = interventions;
               var select = document.getElementById("interventionSelect");
               for (var i = 0; i < interventions.length; i++) {
-                  var option = document.createElement("option");
-                  option.text = "Id:" + interventions[i].Id + " Name:" + interventions[i].Name;
-                  option.value = interventions[i].Id;
-                  select.appendChild(option);
+                 // $('#interventionSelect').append("<option value='" + interventions[i].Id + "'>Id:" + interventions[i].Id + " Name:" + interventions[i].Name + "</option>");
               }
+              
           }, function (error) {
           });
     }
 
     $scope.interventionSelected = function () {
-        var i = getInterventionIndex($scope.Report.Intervention);
-        document.getElementById('intervention').innerHTML = "<b>Id:</b>" + $scope.interventions[i].Id + "<br> <b>Name:</b>" + $scope.interventions[i].Name + "<br> <b>Description:</b>" + $scope.interventions[i].Description;
+        document.getElementById('intervention').innerHTML = "<b>Id:</b>" + $scope.Report.Intervention.Id + "<br> <b>Name:</b>" + $scope.Report.Intervention.Name + "<br> <b>Description:</b>" + $scope.Report.Intervention.Description;
     }
 
     $scope.radioSelected = function (i) {
@@ -110,10 +139,9 @@ ReportingApp.controller('ReportingController', function ($scope, $http) {
         }
 
         doc.setFontSize(20);
-        var index = getInterventionIndex($scope.Report.Intervention);
-        doc.text(60, 150, $scope.interventions[index].Name);
+        doc.text(60, 150, $scope.Report.Intervention.Name);
         doc.setFontType("normal");
-        doc.text(60, 180, doc.splitTextToSize("Description: " + $scope.interventions[index].Description, 500));
+        doc.text(60, 180, doc.splitTextToSize("Description: " + $scope.Report.Intervention.Description, 500));
         doc.setFontType("bold");
         doc.text(60, 310, "Tests:");
         doc.setFontType("normal");
@@ -237,4 +265,6 @@ ReportingApp.directive('datepicker', function () {
         }
     };
 });
+
+
 //-------------------------------------------------------------------------------------------------------------

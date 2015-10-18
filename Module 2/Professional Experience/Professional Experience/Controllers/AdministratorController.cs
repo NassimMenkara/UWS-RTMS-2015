@@ -57,7 +57,7 @@ namespace Professional_Experience.Controllers
                 //For each test taken within the date range, get answers
                 //Generate simple statistics, averages etc from data
                 //Return data to client
-                int interventionId = m.Intervention;
+                int interventionId = m.intervention.Id;
                 List<ReportTestModel> tests = new List<ReportTestModel>();
                 String connectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
                 SqlConnection conn = new SqlConnection(connectionString);

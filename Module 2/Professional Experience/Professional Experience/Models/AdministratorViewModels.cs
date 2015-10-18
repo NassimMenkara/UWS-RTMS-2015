@@ -10,7 +10,7 @@ namespace Professional_Experience.Models
     public class ReportViewModel
     {
         [Required]
-        public int Intervention { get; set; }
+        public Intervention intervention { get; set; }
         [Required]
         public int FilterSelection { get; set; }
         public string StartDate { get; set; }
@@ -32,6 +32,13 @@ namespace Professional_Experience.Models
         public String Question { get; set; }
         public int Question_Type { get; set; }
         public List<KeyValuePair<String, int>> Answers { get; set; }
+    }
+
+    public class Intervention
+    {
+        public int Id { get; set; }
+        public String Name { get; set; }
+        public String Description { get; set; }
     }
     //public class Intervention
     //{
