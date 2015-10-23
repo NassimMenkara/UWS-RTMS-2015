@@ -2,7 +2,7 @@
 onStart();
 
 function onStart() {
-    // loops through all divs inside main div and sets them to be displayed
+    // on start loops through all divs inside main div and sets them to be displayed
     var div = document.getElementById('main');
     var divs = div.getElementsByTagName('div');
     pageCount = divs.length;
@@ -62,8 +62,9 @@ CompleteTestApp.controller('CompleteTestController', function ($scope, $http) {
         $http.post('/Participant/SubmitTest', JSON.stringify(testObj)).
             then(function (response) {
                 if (response.data == "success") {
-                    alert("Successfully completed test!")
-                    location.href = '/Participant/InterventionResults';
+                    alert("Successfully completed test!");
+                    var oldURL = document.referrer;
+                    location.href = oldURL;
                 } else {
                     alert("failed");
                 }

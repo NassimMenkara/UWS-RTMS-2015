@@ -32,6 +32,8 @@ ReportingApp.controller('ReportingController', function ($scope, $http) {
     $scope.Report = {};
     $scope.Report.FilterSelection = 1;
     getInterventions();
+
+    // generate report and preview in iframe
     $scope.generatePDF = function () {
         console.log($scope.Report);
         $http.post('/Administrator/GenerateReport', JSON.stringify($scope.Report)).then(function (response) {
@@ -52,6 +54,7 @@ ReportingApp.controller('ReportingController', function ($scope, $http) {
         });
     }
 
+    // generate report and download
     $scope.downloadPDF = function () {
         console.log($scope.Report);
         $http.post('/Administrator/GenerateReport', JSON.stringify($scope.Report)).then(function (response) {
@@ -61,18 +64,15 @@ ReportingApp.controller('ReportingController', function ($scope, $http) {
                 var tests = response.data;
                 console.log(JSON.stringify(tests[0].Questions[0].Answers));
                 var doc = createPDF(tests);
-                //document.getElementById('pdfPreview').style.display = "block";
                 doc.output('save', 'RTMS-Intervention-Report.pdf');
-                //document.getElementById('pdfPreview').src = doc.output('datauristring');
             } else {
                 alert("Failed: all fields are required")
             }
-
-
         }, function (error) {
         });
     }
 
+    // retrieve interventions from server
     function getInterventions() {
         $http.get('/Administrator/GetInterventions').
           then(function (results) {
@@ -87,6 +87,7 @@ ReportingApp.controller('ReportingController', function ($scope, $http) {
           });
     }
 
+    // display selected intervention name
     $scope.interventionSelected = function () {
         document.getElementById('intervention').innerHTML = "<b>Id:</b>" + $scope.Report.Intervention.Id + "<br> <b>Name:</b>" + $scope.Report.Intervention.Name + "<br> <b>Description:</b>" + $scope.Report.Intervention.Description;
     }
@@ -102,6 +103,7 @@ ReportingApp.controller('ReportingController', function ($scope, $http) {
         $scope.Report.FilterSelection = i;
     }
 
+    // validates form before submitting to server
     $scope.validateForm = function () {
         var invalidForm = false;
         if ($scope.Report.FilterSelection == 1) { //All
@@ -116,13 +118,7 @@ ReportingApp.controller('ReportingController', function ($scope, $http) {
         return invalidForm;
     }
 
-    function getInterventionIndex(id) {
-        for(var i = 0; i < $scope.interventions.length; i++){
-            if ($scope.interventions[i].Id == id)
-                return i;
-        }
-    }
-
+    // creates/designs PDF using jsPDF library
     function createPDF(tests) {
         pages = 1;
         var doc = new jsPDF('p', 'pt');
@@ -137,21 +133,19 @@ ReportingApp.controller('ReportingController', function ($scope, $http) {
         else {
             doc.text(60, 120, 'Filter selection: Date Range - StartDate:' + $scope.Report.StartDate + ', EndDate:' + $scope.Report.EndDate);
         }
-
         doc.setFontSize(20);
         doc.text(60, 150, $scope.Report.Intervention.Name);
         doc.setFontType("normal");
         doc.text(60, 180, doc.splitTextToSize("Description: " + $scope.Report.Intervention.Description, 500));
         doc.setFontType("bold");
-        doc.text(60, 310, "Tests:");
+        doc.text(60, 360, "Tests:");
         doc.setFontType("normal");
-        y = 310;
+        y = 360;
         for (var i = 0; i < tests.length; i++) {
             y += 30;
             doc.text(60, y, "> " + tests[i].Name);
         }
         doc.text(60, 800, "Page:" + pages);
-        //doc.text(20, 40, JSON.stringify(response.data));
         for (var i = 0; i < tests.length; i++) {
             y = 0;
             doc.addPage();
@@ -166,7 +160,7 @@ ReportingApp.controller('ReportingController', function ($scope, $http) {
             doc.text(60, y, "ID: " + tests[i].Id);
             y += 30;
             doc.text(60, y, doc.splitTextToSize("Description: " + tests[i].Description, 500));
-            y += 30;
+            y += 180;
             doc.text(60, y, "This test has been completed: " + tests[i].CompletionCount + " times");
             y += 30;
             doc.text(60, y, doc.splitTextToSize("This report lists all multiple-choice & multi-answer questions in the pages below.", 500));
@@ -183,19 +177,19 @@ ReportingApp.controller('ReportingController', function ($scope, $http) {
                     y += 30;
                     doc.text(60, y, doc.splitTextToSize("Question:" + tests[i].Questions[j].Question, 500));
                     y += 30;
-                    doc.text(60, y, doc.splitTextToSize("Values:" + objsToArrs(tests[i].Questions[j].Answers), 500));
+                    doc.text(60, y, doc.splitTextToSize("Values:" + objsToArr(tests[i].Questions[j].Answers), 500));
                     y += 60;
                     doc.text(60, y, "Chart:");
                     y += 60;
-                    doc.addImage(createChart(objsToArrs(tests[i].Questions[j].Answers)), 'PNG', 60, y, 400, 400);
+                    doc.addImage(createChart(objsToArr(tests[i].Questions[j].Answers)), 'PNG', 60, y, 400, 400);
                     doc.text(60, 800, "Page:" + pages);
                 }
             }
         }
-        
         return doc;
     }
 
+    // manages pages y axis
     function checkPages(doc) {
         var pageHeight = doc.internal.pageSize.height;
         // Before adding new content
@@ -208,6 +202,7 @@ ReportingApp.controller('ReportingController', function ($scope, $http) {
         return doc;
     }
 
+    // creates chart image usign jqplot, image is then added to PDF
     function createChart(data) {
         //var s1 = [['Sony', 7], ['Samsumg', 13.3], ['LG', 14.7], ['Vizio', 5.2], ['Insignia', 1.2]];
 
@@ -239,7 +234,8 @@ ReportingApp.controller('ReportingController', function ($scope, $http) {
         return imgData;
     }
 
-    function objsToArrs(objs) {
+    // converts objects to array
+    function objsToArr(objs) {
         var array = []
         for (var i = 0; i < objs.length; i++) {
             var tempArray = [];
@@ -251,6 +247,7 @@ ReportingApp.controller('ReportingController', function ($scope, $http) {
     }
 });
 
+// Angular datepicker directive handles jQuery datepicker
 ReportingApp.directive('datepicker', function () {
     return {
         require: 'ngModel',
@@ -265,6 +262,5 @@ ReportingApp.directive('datepicker', function () {
         }
     };
 });
-
 
 //-------------------------------------------------------------------------------------------------------------

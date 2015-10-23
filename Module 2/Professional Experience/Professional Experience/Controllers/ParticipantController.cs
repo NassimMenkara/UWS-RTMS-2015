@@ -72,30 +72,43 @@ namespace Professional_Experience.Controllers
             }
             nwReader.Close();
             List<InterventionModels.Intervention> interventions = new List<InterventionModels.Intervention>();
-            sql = "SELECT Intervention_Area.Id AS interventionId, Intervention_Area.Name AS interventionName, Intervention_Area.Description AS interventionDescription FROM Intervention_Area INNER JOIN Participant_Group_Intervention_Area ON Intervention_Area.Id = Participant_Group_Intervention_Area.Intervention_Area_Id INNER JOIN Trial_Participant_Participant_Group ON Participant_Group_Intervention_Area.Participant_Group_Id = Trial_Participant_Participant_Group.Participant_Group_Id INNER JOIN Trial_Participant ON Trial_Participant.Id = Trial_Participant_Participant_Group.Trial_Participant_Id INNER JOIN Participant ON Trial_Participant.Participant_Id = Participant.Id INNER JOIN Person ON Person.Id = Participant.Person_Id WHERE username = '" + username + "';";
+
+            // get participant's Trial_Participant classification
+            int classification = -1;
+            sql = "SELECT Classification FROM Trial_Participant WHERE Participant_Id = '" + GetCurrentParticipant.Id.ToString() + "' AND Trial_Id = '" + ViewBag.TrialId.ToString() + "';";
             cmd = new SqlCommand(sql, conn);
             nwReader = cmd.ExecuteReader();
             while (nwReader.Read())
             {
-                String interventionId = nwReader["interventionId"].ToString();
-                String name = nwReader["interventionName"].ToString();
-                String description = nwReader["interventionDescription"].ToString();
-                List<InterventionModels.Test> tests = new List<InterventionModels.Test>();
-                SqlConnection testConn = new SqlConnection(connectionString);
-                testConn.Open();
-                sql = "SELECT * FROM Intervention_Area_Test WHERE Intervention_Area_Id = '" + interventionId + "';";
-                SqlCommand testCmd = new SqlCommand(sql, testConn);
-                SqlDataReader testReader = testCmd.ExecuteReader();
-                while (testReader.Read())
+                classification = Convert.ToInt32(nwReader["Classification"].ToString());
+            }
+            nwReader.Close();
+            if(classification == 0){ //intervention group
+                sql = "SELECT Intervention_Area.Id AS interventionId, Intervention_Area.Name AS interventionName, Intervention_Area.Description AS interventionDescription FROM Intervention_Area INNER JOIN Participant_Group_Intervention_Area ON Intervention_Area.Id = Participant_Group_Intervention_Area.Intervention_Area_Id INNER JOIN Trial_Participant_Participant_Group ON Participant_Group_Intervention_Area.Participant_Group_Id = Trial_Participant_Participant_Group.Participant_Group_Id INNER JOIN Trial_Participant ON Trial_Participant.Id = Trial_Participant_Participant_Group.Trial_Participant_Id INNER JOIN Participant ON Trial_Participant.Participant_Id = Participant.Id INNER JOIN Person ON Person.Id = Participant.Person_Id WHERE username = '" + username + "';";
+                cmd = new SqlCommand(sql, conn);
+                nwReader = cmd.ExecuteReader();
+                while (nwReader.Read())
                 {
-                    int testId = Convert.ToInt32(testReader["Id"].ToString());
-                    String testName = testReader["Name"].ToString();
-                    String testDescription = testReader["Description"].ToString();
-                    tests.Add(new InterventionModels.Test(testId, testName, testDescription, null));
+                    String interventionId = nwReader["interventionId"].ToString();
+                    String name = nwReader["interventionName"].ToString();
+                    String description = nwReader["interventionDescription"].ToString();
+                    List<InterventionModels.Test> tests = new List<InterventionModels.Test>();
+                    SqlConnection testConn = new SqlConnection(connectionString);
+                    testConn.Open();
+                    sql = "SELECT * FROM Intervention_Area_Test WHERE Intervention_Area_Id = '" + interventionId + "';";
+                    SqlCommand testCmd = new SqlCommand(sql, testConn);
+                    SqlDataReader testReader = testCmd.ExecuteReader();
+                    while (testReader.Read())
+                    {
+                        int testId = Convert.ToInt32(testReader["Id"].ToString());
+                        String testName = testReader["Name"].ToString();
+                        String testDescription = testReader["Description"].ToString();
+                        tests.Add(new InterventionModels.Test(testId, testName, testDescription, null));
+                    }
+                    interventions.Add(new InterventionModels.Intervention(name, description, null, tests));
+                    testReader.Close();
+                    testConn.Close();
                 }
-                interventions.Add(new InterventionModels.Intervention(name, description, null, tests));
-                testReader.Close();
-                testConn.Close();
             }
             nwReader.Close();
             conn.Close();

@@ -27,12 +27,12 @@
 <div class="container" ng-app="ReportingApp">
     <form id="outer" ng-controller="ReportingController">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-5">
                 <b>Select an intervention:</b><br />
                 <input type="text" ng-model="search" class="form-control" placeholder="Search for intervention"/>
                 <select id="interventionSelect" name="interventionSelect" size="8" ng-model="Report.Intervention" ng-options="intervention.Name for intervention in interventions | filter:search" ng-change="interventionSelected()" class="form-control"></select><br />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <br />
                 <p id="intervention" class="alert alert-info" role="alert"></p><br />
             </div>
@@ -60,7 +60,6 @@
                 </ul>
             </div><br /><br />
         </div>
-        {{Report}}
     </form>
 </div>
 <iframe id="pdfPreview" width="800" height="700" src="" class="" style="display:none;"> </iframe>

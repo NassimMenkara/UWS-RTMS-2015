@@ -17,8 +17,8 @@
                 <li><a class="btn btn-primary" href="#"><i class="glyphicon glyphicon-home"></i></a></li>
             </ol>
             <b>Please create your intervention:</b><br />
-            <b>Name:</b> <input id="interventionName" type="text" class="form-control input-lg" ng-model="intervention_name" size="60" ng-required="intervention_name" /><br />
-            <b>Description:</b> <textarea id="interventionDescription" rows="3" cols="40" class="form-control input-lg" ng-model="intervention_description"></textarea><br />
+            <b>Name:</b> <input id="interventionName" type="text" class="form-control input-lg" ng-model="intervention_name" size="60" ng-required="intervention_name" placeholder="Intervention Name"/><br />
+            <b>Description:</b> <textarea id="interventionDescription" rows="3" cols="40" class="form-control input-lg" ng-model="intervention_description" placeholder="Intervention Description"></textarea><br />
 
 
             <b>Investigators:</b> <span id="selectedInvestigators" ></span> <br />
@@ -56,7 +56,6 @@
             <select id="investigatorSelect" size="8" class="form-control" ng-model="investigator.multiSelect" ng-options="investigator.First_Name + ' ' + investigator.Last_Name + ' ' + investigator.Institution for investigator in investigators | filter:search" ng-disabled="checkSelectForOptions('investigatorSelect')" disabled multiple></select><br />
             <button ng-click="addInvestigators()" class="btn btn-success btn-lg btn-block">Save</button>
             <button ng-click="setIndex(1)" class="btn btn-default btn-lg btn-block">Back</button>
-            {{investigator.multiSelect}}
         </div>
 
         <div id="Tests" ng-show="check(3)" style="display: none; max-width: 400px;">
@@ -66,8 +65,8 @@
                 <li><a class="btn btn-primary" href>Add/Edit Test</a></li>
             </ol>
             <b>Please create your test:</b><br />
-            <b>Name:</b> <input id="testName" type="text" class="form-control input-lg" ng-model="test_name" size="60" /><br />
-            <b>Description:</b> <textarea id="testDescription" rows="3" cols="40" class="form-control input-lg" ng-model="test_description"></textarea><br />
+            <b>Name:</b> <input id="testName" type="text" class="form-control input-lg" ng-model="test_name" size="60" placeholder="Test Name"/><br />
+            <b>Description:</b> <textarea id="testDescription" rows="3" cols="40" class="form-control input-lg" ng-model="test_description" placeholder="Test Description"></textarea><br />
             <b>Questions:</b><br />
             <select id="questionSelect" class="form-control" size="8" onchange="questionSelectChange()" ng-disabled="checkSelectForOptions('questionSelect')" disabled></select><br />
             <button id="editQuestionBtn" ng-click="editQuestion()" style="display:none;" class="btn btn-default btn-lg btn-block">Edit Question</button>
@@ -122,8 +121,5 @@
         </div><br />
 
         <span id="message" class="success"></span><br /><br />
-        {{index}}<br />
-        {{interventionObj}}
-
     </form>
 </div>

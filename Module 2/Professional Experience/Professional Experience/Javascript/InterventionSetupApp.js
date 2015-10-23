@@ -29,41 +29,44 @@ var questionSelected = false;
 var answerSelected = false;
 
 function onStart() {
+    // runs on start and sets some default values 
+    // display divs
     document.getElementById('Investigators').style.display = "block";
     document.getElementById('Tests').style.display = "block";
     document.getElementById('ExternalTest').style.display = "block";
     document.getElementById('AddQuestion').style.display = "block";
     document.getElementById("message").style.display = "block";
+    // hide measurement dropdown
     document.getElementById('measurementType').style.display = "none";
     // enable select menus
     document.getElementById('testSelect').disabled = false;
     document.getElementById('investigatorSelect').disabled = false;
     document.getElementById('questionSelect').disabled = false;
     document.getElementById('answersSelect').disabled = false;
-
     printMessage("Intervention setup has started!", "success");
 }
 
 function questionTypeChange(selectedOption) {
+    // runs when question type is changed and modifies UI accordingly
     if (selectedOption == null) {
         var select = document.getElementById("answerType");
         selectedOption = select.options[select.selectedIndex].value;
     }
     var testIndex = getTestIndex(currentTestId);
     var questionIndex = getQuestionIndex(testIndex, currentQuestionId);
-    if (selectedOption == "3") {
+    if (selectedOption == "3") { //Measurement type
         document.getElementById("answer").style.display = "none";
         document.getElementById("addAnswerBtn").style.display = "none";
         document.getElementById("measurementType").style.display = "block";
         emptySelect(document.getElementById("answersSelect"));
-        intervention.Tests[testIndex].Questions[questionIndex].Answers = [];
-    } else if (selectedOption == "4") {
+        intervention.Tests[testIndex].Questions[questionIndex].Answers = []; //empty answers
+    } else if (selectedOption == "4") { //Text type
         document.getElementById("answer").style.display = "none";
         document.getElementById("addAnswerBtn").style.display = "none";
         document.getElementById("measurementType").style.display = "none";
         emptySelect(document.getElementById("answersSelect"));
-        intervention.Tests[testIndex].Questions[questionIndex].Answers = [];
-    } else {
+        intervention.Tests[testIndex].Questions[questionIndex].Answers = []; //empty answers
+    } else { //Multiple choice or Multiple answer type
         document.getElementById("answer").style.display = "block";
         document.getElementById("addAnswerBtn").style.display = "block";
         document.getElementById("measurementType").style.display = "none";
@@ -71,6 +74,7 @@ function questionTypeChange(selectedOption) {
 }
 
 function testSelectChange() {
+    // runs when test select list changes and configures UI
     testSelected = true;
     var testSelect = document.getElementById("testSelect");
     if (testSelect.options[testSelect.selectedIndex].text == "Mockup External Test") {
@@ -82,21 +86,25 @@ function testSelectChange() {
 }
 
 function questionSelectChange() {
+    // runs when question select list changes
     questionSelected = true;
     toggleQuestionButtons();
 }
 
 function answerSelectChange() {
+    // runs when answer select list changes
     answerSelected = true;
     toggleAnswerButton();
 }
 
 function emptySelect(select) {
+    //empty select from options
     while (select.options.length > 0)
         select.remove(0);
 }
 
 function getTestIndex(testId) {
+    // find a test's index in tests array
     for (var i = 0; i < intervention.Tests.length; i++) {
         if (intervention.Tests[i].Test_Id == testId) {
             return i;
@@ -105,6 +113,7 @@ function getTestIndex(testId) {
 }
 
 function getQuestionIndex(testIndex, questionId) {
+    // find a question's index in questions array
     for (var i = 0; i < intervention.Tests[testIndex].Questions.length; i++) {
         if (intervention.Tests[testIndex].Questions[i].Question_Id == questionId) {
             return i;
@@ -113,12 +122,14 @@ function getQuestionIndex(testIndex, questionId) {
 }
 
 function resetTestView() {
+    // reset UI for test view
     document.getElementById("testName").value = "";
     document.getElementById("testDescription").value = "";
     emptySelect(document.getElementById("questionSelect"));
 }
 
 function resetQuestionView() {
+    // reset UI for question view
     document.getElementById("questionTitle").value = "";
     document.getElementById("answerType").selectedIndex = 0;
     emptySelect(document.getElementById("answersSelect"));
@@ -129,9 +140,8 @@ function resetQuestionView() {
     document.getElementById("measurementType").style.display = "none";
 }
 
-
-
 function checkSelect(options, id) {
+    // check to see if id is a select option
     for (var i = 0; i < options.length; i++) {
         if (options[i].value == id) {
             return i;
@@ -141,6 +151,7 @@ function checkSelect(options, id) {
 }
 
 function printMessage(message, status) {
+    // prints message
     var messageElement = document.getElementById('message');
     switch (status) {
         case "success":
@@ -163,43 +174,46 @@ function printMessage(message, status) {
 }
 
 function clone(obj) {
+    // clones object by value
     var newObj = JSON.parse(JSON.stringify(obj))
     return newObj;
 }
 
 function deselectMenu(selectMenu) {
+    // deselect a select menu
     document.getElementById(selectMenu).selectedIndex = -1;
 }
 
 function toggleTestButtons() {
-    if (testSelected) {
+    // toggle test's edit and delete buttons
+    if (testSelected) { //show
         document.getElementById("editTestBtn").style.display = "block";
         document.getElementById("deleteTestBtn").style.display = "block";
-    } else {
+    } else { //hide
         document.getElementById("editTestBtn").style.display = "none";
         document.getElementById("deleteTestBtn").style.display = "none";
     }
 }
 
 function toggleQuestionButtons() {
-    if (questionSelected) {
+    // toggle question's edit and delete buttons
+    if (questionSelected) { //show
         document.getElementById("editQuestionBtn").style.display = "block";
         document.getElementById("deleteQuestionBtn").style.display = "block";
-    } else {
+    } else { //hide
         document.getElementById("editQuestionBtn").style.display = "none";
         document.getElementById("deleteQuestionBtn").style.display = "none";
     }
 }
 
 function toggleAnswerButton() {
-    if (answerSelected) {
+    // toggle answer's delete button
+    if (answerSelected) { //show
         document.getElementById("deleteAnswerBtn").style.display = "block";
-    } else {
+    } else { //hide
         document.getElementById("deleteAnswerBtn").style.display = "none";
     }
 }
-
-
 
 //--------------------------------------------------AngularJS--------------------------------------------------
 var InterventionSetupApp = angular.module('InterventionSetupApp', []);
@@ -209,7 +223,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
     $scope.interventionObj = intervention;
     getInvestigators();
 
-    
+    // compares current index with div's index to determine if div should show
     $scope.check = function (i) {
         if ($scope.index == i)
             return true;
@@ -217,10 +231,12 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
             return false;
     };
 
+    // sets page index
     $scope.setIndex = function (i) {
         $scope.index = i;
     };
 
+    // submit intervention object to server
     $scope.submitIntervention = function () {
         createIntervention();
         $http.post('/Administrator/SubmitIntervention', JSON.stringify(intervention)).
@@ -230,15 +246,16 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         });
     };
 
+    // retrieves investigators from server
     function getInvestigators() {
         $http.get('/Administrator/GetInvestigators').
           then(function (results) {
                $scope.investigators = results.data;
-              //listInvestigators(obj);
           }, function (error) {
         });
     }
 
+    // validate intervention object
     $scope.validateIntervention = function () {
         var interventionInvalid = false;
         if ($scope.intervention_name == undefined || $scope.intervention_name == "") {
@@ -253,6 +270,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         return interventionInvalid;
     }
 
+    // validate test object
     $scope.validateTest = function () {
         var testInvalid = false;
         if ($scope.test_name == undefined || $scope.test_name == "") {
@@ -267,6 +285,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         return testInvalid;
     }
 
+    // validate question object
     $scope.validateQuestion = function () {
         var questionInvalid = false;
         if ($scope.question_title == undefined || $scope.question_title == "") {
@@ -289,6 +308,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         return questionInvalid;
     }
 
+    // create a new test
     $scope.createTest = function () {
         var test = new Test(); //create test object
         testCount++;
@@ -304,6 +324,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         $scope.setIndex(3);
     }
 
+    // create a new external test
     $scope.createExternalTest = function () {
         if (externalTest == 0) {
             var test = new Test(); //create test object
@@ -326,6 +347,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         $scope.setIndex(4);
     }
 
+    // save test
     $scope.saveTest = function() {
         var testName = document.getElementById("testName").value;
         var select = document.getElementById("testSelect");
@@ -352,6 +374,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         $scope.setIndex(1);
     }
 
+    // edit a test
     $scope.editTest = function() {
         var testSelect = document.getElementById("testSelect");
         if (testSelect.selectedIndex < 0) {
@@ -375,6 +398,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         }
     }
 
+    // delete a test
     $scope.deleteTest = function() {
         var testSelect = document.getElementById("testSelect");
         if (testSelect.selectedIndex < 0) {
@@ -391,6 +415,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         }
     }
 
+    // create a new question
     $scope.createQuestion = function() {
         var question = new Question(); //create question object
         questionCount++;
@@ -407,6 +432,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         $scope.setIndex(5);
     }
 
+    // edit a question
     $scope.editQuestion = function() {
         if (questionSelect.selectedIndex < 0) {
             printMessage("No question has been selected for editing", "fail");
@@ -431,6 +457,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         }
     }
 
+    // delete a question
     $scope.deleteQuestion = function() {
         var questionSelect = document.getElementById("questionSelect");
         if (questionSelect.selectedIndex < 0) {
@@ -448,6 +475,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         }
     }
 
+    // save external test
     $scope.saveExternalTest = function() {
         var questions = [];
         if (document.getElementById("externalQuestion1").checked) {
@@ -496,6 +524,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         $scope.setIndex(1);
     }
 
+    // save question
     $scope.saveQuestion = function(){
         var questionTitle = document.getElementById("questionTitle").value;
         var select = document.getElementById("questionSelect");
@@ -524,23 +553,13 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         $scope.setIndex(3);
     }
 
+    // initialise intervention
     function createIntervention() {
         intervention.Intervention_Name = document.getElementById("interventionName").value;
         intervention.Intervention_Description = document.getElementById("interventionDescription").value;
-        //printMessage("Intervention was submitted");
-        console.log(intervention);
     }
 
-    function listInvestigators(rows) {
-        var select = document.getElementById("investigatorSelect");
-        for (var i = 0; i < rows.length; i++) {
-            var option = document.createElement("option");
-            option.text = i + 1 + ") " + rows[i].First_Name + " " + rows[i].Last_Name + " " + rows[i].Institution;
-            option.value = rows[i].Id.toString();
-            select.appendChild(option);
-        }
-    }
-
+    // adds investigators selected to intervention
     $scope.addInvestigators = function () {
         var investigatorList = [];
         for (var i = 0; i < $scope.investigator.multiSelect.length; i++) {
@@ -552,6 +571,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         $scope.setIndex(1);
     }
 
+    // adds answer to the current question
     $scope.addAnswer = function() {
         if (document.getElementById("answer").value != "") { //answer cannot be blank
             var select = document.getElementById("answersSelect");
@@ -566,6 +586,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         }
     }
 
+    // deletes currently selected answer
     $scope.deleteAnswer = function() {
         var answersSelect = document.getElementById("answersSelect");
         if (answersSelect.selectedIndex < 0) {
@@ -584,6 +605,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         }
     }
 
+    // action for back button in test view
     $scope.backTest = function() {
         if (editingTest) {
             resetTestView();
@@ -602,6 +624,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         $scope.setIndex(1);
     }
 
+    // discard current test
     function discardTest() {
         resetTestView();
         var testIndex = getTestIndex(currentTestId);
@@ -610,6 +633,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         printMessage("Test has been discarded", "fail");
     }
 
+    // discard external test
     $scope.discaredExternalTest = function() {
         if (externalTest == 0) {
             var testIndex = getTestIndex(currentTestId);
@@ -621,6 +645,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         $scope.setIndex(1);
     }
 
+    // action for back button in question view
     $scope.backQuestion = function() {
         if (editingQuestion) {
             resetQuestionView();
@@ -640,6 +665,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         $scope.setIndex(3);
     }
 
+    // discard current question
     function discardQuestion() {
         resetQuestionView();
         var testIndex = getTestIndex(currentTestId);

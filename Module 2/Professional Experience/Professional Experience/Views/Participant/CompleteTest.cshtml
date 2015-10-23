@@ -71,11 +71,20 @@
         }
         <nav>
             <ul class="pagination">
-                <li>
-                    <a href="" ng-click="setIndex(index-1)" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
+                
+                @{if (ViewBag.Questions.Count < 6)
+                {
+                    @:<li class="disabled">
+                }
+                else
+                {
+                    @:<li>
+                }
+                }
+                <a href="" ng-click="setIndex(index-1)" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
                 @{
                     int pageIndex = 0;
                     for (int i = 1; i < ViewBag.Questions.Count + 1; i++)
@@ -88,9 +97,18 @@
                     }
                 }
                 <li>
-                    <a href="" ng-click="setIndex(index+1)" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
+                @{if (ViewBag.Questions.Count < 6)
+                {
+                    @:<li class="disabled">
+                }
+                else
+                {
+                    @:<li>
+                }      
+                }
+                <a href="" ng-click="setIndex(index+1)" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
                 </li>
             </ul>
         </nav>
@@ -98,10 +116,6 @@
         <input type="submit" id="submitBtn" class="btn btn-primary" value="Submit"></input>
         <button id="backBtn" onclick="location.href = '/Participant/InterventionResults/?trialId=@ViewBag.TrialId';" class="btn btn-default">Cancel</button>
         </form>
-
-        {{test}} <br />
-        {{answers}} <br />
-        Multis: {{multis}}
 </div>
 
 
