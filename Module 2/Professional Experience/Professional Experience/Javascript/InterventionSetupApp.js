@@ -22,6 +22,7 @@ var editingTest = false;
 var editingQuestion = false;
 var externalTest = 0;
 var tempTest = new Test();
+
 var tempQuestion = new Question();
 
 var testSelected = false;
@@ -77,7 +78,7 @@ function testSelectChange() {
     // runs when test select list changes and configures UI
     testSelected = true;
     var testSelect = document.getElementById("testSelect");
-    if (testSelect.options[testSelect.selectedIndex].text == "Mockup External Test") {
+    if (testSelect.options[testSelect.selectedIndex].text == "Simply Brain Training") {
         document.getElementById("editTestBtn").disabled = true;
     } else {
         document.getElementById("editTestBtn").disabled = false;
@@ -150,27 +151,15 @@ function checkSelect(options, id) {
     return -1;
 }
 
-function printMessage(message, status) {
+function printMessage(message) {
     // prints message
     var messageElement = document.getElementById('message');
-    switch (status) {
-        case "success":
-            messageElement.className = "success";
-            break;
-        case "fail":
-            messageElement.className = "fail";
-            break;
-        case "edit":
-            messageElement.className = "edit";
-        default:
-            break;
-    }
     messageElement.style.display = "inline";
     messageElement.innerHTML = message;
     setTimeout(function () {
         messageElement.innerHTML = "";
         messageElement.style.display = "none";
-    }, 3000);
+    }, 5000);
 }
 
 function clone(obj) {
@@ -241,7 +230,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         createIntervention();
         $http.post('/Administrator/SubmitIntervention', JSON.stringify(intervention)).
             then(function (response) {
-                printMessage("Response:" + response.data, "success");
+                printMessage("Response:" + response.data);
             }, function (error) {
         });
     };
@@ -315,7 +304,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         test.Test_Id = testCount; //Id is +1 of length, starting id = 1
         currentTestId = test.Test_Id; //the current test's id
         intervention.Tests.push(test); //push new test object to intervention object
-        printMessage("New test has been created", "success");
+        printMessage("New test has been created");
         if (testSelected) {
             testSelected = false;
             toggleTestButtons();
@@ -330,14 +319,14 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
             var test = new Test(); //create test object
             testCount++;
             test.Test_Id = testCount; //Id is +1 of length, starting id = 1
-            test.Test_Name = "Mockup External Test";
-            test.Test_Description = "This is a mockup external test that will be used to demonstrate the use of an external API";
+            test.Test_Name = "Simply Brain Training";
+            test.Test_Description = "Simply Brain Training is an external brain training exercises provider that provides simple & effective brain testing.";
             currentTestId = test.Test_Id; //the current test's id
             intervention.Tests.push(test); //push new test object to intervention object
-            printMessage("New external test has been created", "success");
+            printMessage("New external test has been created");
         } else {
             currentTestId = externalTest;
-            printMessage("You are now editing the external test", "edit");
+            printMessage("You are now editing the external test");
         }
         if (testSelected) {
             testSelected = false;
@@ -365,7 +354,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         intervention.Tests[testIndex].Test_Name = testName;
         intervention.Tests[testIndex].Test_Description = document.getElementById("testDescription").value;
         currentTestId = 0;
-        printMessage("Test has been saved", "success");
+        printMessage("Test has been saved");
         resetTestView();
         if (questionSelected) {
             questionSelected = false;
@@ -378,7 +367,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
     $scope.editTest = function() {
         var testSelect = document.getElementById("testSelect");
         if (testSelect.selectedIndex < 0) {
-            printMessage("No test has been selected for editing", "fail");
+            printMessage("No test has been selected for editing");
         } else {
             editingTest = true;
             currentTestId = testSelect.options[testSelect.selectedIndex].value; //set currentTestId to test selected from list
@@ -393,7 +382,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
                 option.value = intervention.Tests[testIndex].Questions[i].Question_Id;
                 questionSelect.add(option);
             }
-            printMessage("You are now editing an existing test", "edit");
+            printMessage("You are now editing an existing test");
             $scope.setIndex(3);
         }
     }
@@ -402,7 +391,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
     $scope.deleteTest = function() {
         var testSelect = document.getElementById("testSelect");
         if (testSelect.selectedIndex < 0) {
-            printMessage("No test has been selected for deleting", "fail");
+            printMessage("No test has been selected for deleting");
         } else {
             testId = testSelect.options[testSelect.selectedIndex].value; //testId to be deleted
             var testIndex = getTestIndex(testId);
@@ -411,7 +400,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
             deselectMenu("testSelect");
             testSelected = false;
             toggleTestButtons();
-            printMessage("Test has been deleted", "fail");
+            printMessage("Test has been deleted");
         }
     }
 
@@ -423,7 +412,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         question.Question_Id = questionCount; //Id is +1 of length, starting id = 1
         currentQuestionId = question.Question_Id; //the current question's id
         intervention.Tests[testIndex].Questions.push(question);
-        printMessage("New question has been created", "success");
+        printMessage("New question has been created");
         if (questionSelected) {
             questionSelected = false;
             toggleQuestionButtons();
@@ -435,7 +424,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
     // edit a question
     $scope.editQuestion = function() {
         if (questionSelect.selectedIndex < 0) {
-            printMessage("No question has been selected for editing", "fail");
+            printMessage("No question has been selected for editing");
         } else {
             editingQuestion = true;
             currentQuestionId = questionSelect.options[questionSelect.selectedIndex].value;
@@ -452,7 +441,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
                 option.text = intervention.Tests[testIndex].Questions[questionIndex].Answers[i];
                 answersSelect.add(option);
             }
-            printMessage("You are now editing an existing question", "edit");
+            printMessage("You are now editing an existing question");
             $scope.setIndex(5);
         }
     }
@@ -461,7 +450,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
     $scope.deleteQuestion = function() {
         var questionSelect = document.getElementById("questionSelect");
         if (questionSelect.selectedIndex < 0) {
-            printMessage("No question has been selected for deleting", "fail");
+            printMessage("No question has been selected for deleting");
         } else {
             questionId = questionSelect.options[questionSelect.selectedIndex].value; //questionId to be deleted
             var testIndex = getTestIndex(currentTestId);
@@ -471,7 +460,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
             deselectMenu("questionSelect");
             questionSelected = false;
             toggleQuestionButtons();
-            printMessage("Question has been deleted", "fail");
+            printMessage("Question has been deleted");
         }
     }
 
@@ -509,7 +498,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         if (externalTest > 0) { //already an existing external test
             testIndex = getTestIndex(externalTest);
             intervention.Tests[testIndex].Questions = questions.slice();
-            printMessage("External test has been edited", "success");
+            printMessage("External test has been edited");
         } else {                //save new external test
             externalTest = currentTestId;
             testIndex = getTestIndex(currentTestId);
@@ -517,9 +506,9 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
             var testSelect = document.getElementById("testSelect");
             var option = document.createElement("option");
             option.value = currentTestId
-            option.text = "Mockup External Test";
+            option.text = "Simply Brain Training";
             testSelect.add(option); //add new
-            printMessage("New external test has been saved", "success");
+            printMessage("New external test has been saved");
         }
         $scope.setIndex(1);
     }
@@ -544,7 +533,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         intervention.Tests[testIndex].Questions[questionIndex].Question_Title = questionTitle
         intervention.Tests[testIndex].Questions[questionIndex].Answer_Type = answerType.options[answerType.selectedIndex].value;
         currentQuestionId = 0;
-        printMessage("Question has been saved", "success");
+        printMessage("Question has been saved");
         resetQuestionView();
         if (answerSelected) {
             answerSelected = false;
@@ -566,8 +555,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
             investigatorList.push($scope.investigator.multiSelect[i].Id);
         }
         intervention.Investigators = investigatorList.slice();
-        //document.getElementById("selectedInvestigators").textContent = investigatorList.slice(0, -2);
-        printMessage("Investigators successfully added", "success");
+        printMessage("Investigators successfully added");
         $scope.setIndex(1);
     }
 
@@ -590,7 +578,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
     $scope.deleteAnswer = function() {
         var answersSelect = document.getElementById("answersSelect");
         if (answersSelect.selectedIndex < 0) {
-            printMessage("No answer has been selected for deleting", "fail");
+            printMessage("No answer has been selected for deleting");
         } else {
             answer = answersSelect.options[answersSelect.selectedIndex].value; //questionId to be deleted
             var testIndex = getTestIndex(currentTestId);
@@ -601,7 +589,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
             deselectMenu("answersSelect");
             answerSelected = false;
             toggleAnswerButton();
-            printMessage("Answer has been deleted", "fail");
+            printMessage("Answer has been deleted");
         }
     }
 
@@ -612,7 +600,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
             var testIndex = getTestIndex(currentTestId);
             intervention.Tests[testIndex] = clone(tempTest);
             currentTestId = 0;
-            printMessage("Test was not edited", "fail");
+            printMessage("Test was not edited");
             editingTest = false;
         } else {
             discardTest();
@@ -630,7 +618,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         var testIndex = getTestIndex(currentTestId);
         intervention.Tests.splice(testIndex, 1);
         currentTestId = 0;
-        printMessage("Test has been discarded", "fail");
+        printMessage("Test has been discarded");
     }
 
     // discard external test
@@ -638,9 +626,9 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         if (externalTest == 0) {
             var testIndex = getTestIndex(currentTestId);
             intervention.Tests.splice(testIndex, 1);
-            printMessage("External test has been discarded", "fail");
+            printMessage("External test has been discarded");
         } else {
-            printMessage("External test was not edited", "fail")
+            printMessage("External test was not edited")
         }
         $scope.setIndex(1);
     }
@@ -653,7 +641,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
             var questionIndex = getQuestionIndex(testIndex, currentQuestionId);
             intervention.Tests[testIndex].Questions[questionIndex] = clone(tempQuestion);
             currentQuestionId = 0;
-            printMessage("Question was not edited", "fail");
+            printMessage("Question was not edited");
             editingQuestion = false;
         } else {
             discardQuestion();
@@ -672,7 +660,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         var questionIndex = getQuestionIndex(testIndex, currentQuestionId);
         intervention.Tests[testIndex].Questions.splice(questionIndex, 1);
         currentQuestionId = 0;
-        printMessage("Question has been discarded", "fail");
+        printMessage("Question has been discarded");
     }
 
     $scope.checkAnswerSelect = function (i) {

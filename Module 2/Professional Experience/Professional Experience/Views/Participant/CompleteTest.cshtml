@@ -10,6 +10,7 @@
 
 <p>Please record your results for the following questions:</p>
 <div id="main" ng-app="CompleteTestApp" ng-controller="CompleteTestController">
+        <div id="pages">
         @{
         @:<form id="testForm" ng-submit="submitTest(@ViewBag.TrialId, @ViewBag.TestId)">
 
@@ -69,6 +70,7 @@
             }
         
         }
+        </div>
         <nav>
             <ul class="pagination">
                 
@@ -112,9 +114,10 @@
                 </li>
             </ul>
         </nav>
-        
-        <input type="submit" id="submitBtn" class="btn btn-primary" value="Submit"></input>
-        <button id="backBtn" onclick="location.href = '/Participant/InterventionResults/?trialId=@ViewBag.TrialId';" class="btn btn-default">Cancel</button>
+        <div style="width:280px">
+            <input type="submit" id="submitBtn" class="btn btn-block btn-primary" value="Submit"></input>
+            <button id="backBtn" onclick="location.href = '/Participant/InterventionResults/?trialId=@ViewBag.TrialId';" class="btn btn-block btn-default">Cancel</button>
+        </div>
         </form>
 </div>
 

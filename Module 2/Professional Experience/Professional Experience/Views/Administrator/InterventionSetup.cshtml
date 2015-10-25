@@ -40,8 +40,6 @@
             </div><br /><br />
 
             <button ng-click="submitIntervention()" class="btn btn-success btn-lg btn-block" ng-disabled="validateIntervention()">Save Intervention</button>
-            <!--<input onclick="location.reload()" type="reset" value="Reset" class="btn-sm btn-default" />-->
-
 
         </div>
 
@@ -83,12 +81,12 @@
                 <li><a class="btn btn-primary" href>Add/Edit External Test</a></li>
             </ol>
             <b>Choose External Test:</b> <select id="externalTestList" class="form-control">
-                <option value="mockup">Mockup External Test</option>
+                <option value="mockup">Simply Brain Training</option>
             </select><br />
-            <input type="checkbox" id="externalQuestion1" value="q1" checked disabled> Question 1 (Mandatory) <br>
-            <input type="checkbox" id="externalQuestion2" value="q2"> Question 2 <br>
-            <input type="checkbox" id="externalScore1" value="s1"> Score 1 <br>
-            <input type="checkbox" id="externalScore2" value="s2"> Score 2 <br>
+            <input type="checkbox" id="externalQuestion1" value="q1" checked disabled> Describe how your mental wellbeing is today. <b>(Mandatory)</b> <br><br />
+            <input type="checkbox" id="externalQuestion2" value="q2"> A jet was detected on the Radar flying 300km in 3 minutes, what is the estimated speed per hour? <br><br />
+            <input type="checkbox" id="externalScore1" value="s1"> We have 5 die, 4 of these die are the same, the fifth is not. Find it! <br><br />
+            <input type="checkbox" id="externalScore2" value="s2"> What is the number that is one half of one quarter of one tenth of 480? <br><br />
             <button ng-click="saveExternalTest()" class="btn btn-success btn-lg btn-block">Save</button>
             <button ng-click="discaredExternalTest()" class="btn btn-default btn-lg btn-block">Back</button>
         </div>
@@ -120,6 +118,6 @@
             <button ng-click="backQuestion()" class="btn btn-default btn-lg btn-block">Back</button>
         </div><br />
 
-        <span id="message" class="success"></span><br /><br />
+        <span id="message" class="neutral"></span><br /><br />
     </form>
 </div>

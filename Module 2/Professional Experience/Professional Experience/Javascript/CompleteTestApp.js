@@ -3,9 +3,10 @@ onStart();
 
 function onStart() {
     // on start loops through all divs inside main div and sets them to be displayed
-    var div = document.getElementById('main');
+    var div = document.getElementById('pages');
     var divs = div.getElementsByTagName('div');
     pageCount = divs.length;
+    console.log(pageCount);
     for (var i = 0; i < divs.length; i++) {
         divs[i].style.display = "block";
     }

@@ -24,11 +24,12 @@ textarea {
 }
 
 span.neutral{
-	color:white;
-	background-color:#668DFA;
+	color:black;
+	background-color:#EEE;
 	padding: 10px;
-	font-weight: 600;
-	border:solid 2px #000;
+    font-size:large;
+	font-weight: 500;
+	border:solid 1px #000;
 }
 
 span.success{

@@ -26,6 +26,8 @@ namespace Professional_Experience.Controllers
         {
             return View();
         }
+
+        // fetches currently logged in participant's details
         public PX_Model.Participant GetCurrentParticipant
         {
             get
@@ -36,6 +38,7 @@ namespace Professional_Experience.Controllers
             }
         }
 
+        // retrieves participant's trials
         public ActionResult MyTrials()
         {
             var m = new List<Professional_Experience.Models.MyTrialViewModel>();
@@ -52,6 +55,8 @@ namespace Professional_Experience.Controllers
 
             return View(m.AsEnumerable());
         }
+
+
         public ActionResult InterventionResults(int trialId)
         {
             String username = System.Web.HttpContext.Current.User.Identity.Name;
@@ -207,29 +212,32 @@ namespace Professional_Experience.Controllers
                     }
                 }
             }
-
             return Json("success", JsonRequestBehavior.AllowGet);
-            //return Json("fail", JsonRequestBehavior.AllowGet);      
         }
 
+        // ======================= this function returns the API key from the database using the current username in and the current testid ===================
         public string getApiKey(string username, int testId)
         {
             int personId;
             int participantId;
             string apiKey = "";
 
+            // set up the connection to the RTMS database
             String connectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
             SqlConnection conn = new SqlConnection(connectionString);
             conn.Open();
 
+            // get the person id of the current user
             String sql = "SELECT Id FROM Person WHERE Username = '" + username + "'";
             SqlCommand cmd = new SqlCommand(sql, conn);
             personId = (int)cmd.ExecuteScalar();
 
+            //get the participant id using the person id
             sql = "SELECT Id FROM Participant WHERE Person_Id = " + personId;
             cmd = new SqlCommand(sql, conn);
             participantId = (int)cmd.ExecuteScalar();
 
+            // get the api key using the participant id from above and the testid
             sql = "SELECT API_Key FROM Participant_Intervention_Area_API_Key WHERE Participant_Id = " + participantId + " AND Intervention_Area_Test_Id = " + testId;
             cmd = new SqlCommand(sql, conn);
             apiKey = (string)cmd.ExecuteScalar();
@@ -238,76 +246,89 @@ namespace Professional_Experience.Controllers
             return apiKey;
         }
 
+        // ======================== this controller returns a view when the user clicks on the external test from the intervention page =========================
         public ActionResult ExternalTestIndex(int trialId, int testId)
         {
             ViewBag.trialId = trialId;
             ViewBag.testId = testId;
-            String username = System.Web.HttpContext.Current.User.Identity.Name;
-            string api_key = getApiKey(username, testId);
+            String username = System.Web.HttpContext.Current.User.Identity.Name;    // get current username
+            string api_key = getApiKey(username, testId);                           //get api key
             if (string.IsNullOrEmpty(api_key))
-                ViewBag.api_key = "false";
-            else
+                ViewBag.api_key = "false";  // viewbag.api_key will determine whether tha page will display a 
+            else                            // login page or a link to the external test website.
                 ViewBag.api_key = api_key;
             return View();
         }
 
 
-        public ActionResult ExternalTestResultRetrieval(int trialId, int testId)
+        // ====================================== this controller fetches the results from the external system ========================================
+        public String ExternalTestResultRetrieval(int trialId, int testId)
         {
-            ExternalResultRequest resultRequest = new ExternalResultRequest();
-            resultRequest.request = "getResults";
-            resultRequest.date1 = DateTime.Today.ToString("yyyy-MM-dd HH:mm:ss");
-            resultRequest.date2 = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd HH:mm:ss");
+            ExternalResultRequest resultRequest = new ExternalResultRequest(); // Create a new "result request". The request will be built before it is sent to the node server
+            resultRequest.request = "getResults"; // set request type to "getresults"
+            // date1 and date2 will determine the date range. Tests from within this time range will be retrieved
+            resultRequest.date1 = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now.AddDays(-1), TimeZoneInfo.Local).ToString("yyyy-MM-dd HH:mm:ss");
+            // date1 is the time from 24 hours ago. it is converted to UTC since the node server uses UTC time
+            resultRequest.date2 = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now, TimeZoneInfo.Local).ToString("yyyy-MM-dd HH:mm:ss");
+            // date2 is the present time
             String username = System.Web.HttpContext.Current.User.Identity.Name;
-            resultRequest.key = getApiKey(username, testId);
+            resultRequest.key = getApiKey(username, testId);    //get api key of current user
 
-
+            // the following block serializes the resultRequest class into a json string to be sent to the node server
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             string predata = serializer.Serialize(resultRequest);
             var data = Encoding.ASCII.GetBytes(predata);
+            //create a connection to the server...
             var request = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:8080/externalapi");
             request.Method = "POST";
             request.Accept = "application/json";
             request.ContentType = "application/json";
             request.ContentLength = data.Length;
+            // make the request...
             using (var stream = request.GetRequestStream())
             {
                 stream.Write(data, 0, data.Length);
                 stream.Close();
             }
 
-
+            // the following retrieves the response and places it into a dynamic class called "result"
             var response = request.GetResponse();
             var rStream = response.GetResponseStream();
             var sr = new StreamReader(rStream);
             var content = sr.ReadToEnd();
             dynamic result = Newtonsoft.Json.JsonConvert.DeserializeObject(content);
-            if (result.Success == "true")
+
+            if (result.Success == "true") // if the result returned a success, add the results to the database
             {
+                //create a connection to the RTMS database
                 String connectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
                 SqlConnection conn = new SqlConnection(connectionString);
                 conn.Open();
 
+                // find the trial participant id using the trial id and current username
                 String sql = "SELECT Trial_Participant.Id FROM Trial_Participant INNER JOIN Trial ON Trial_Participant.Trial_Id = Trial.Id INNER JOIN Participant ON Trial_Participant.Participant_Id = Participant.Id INNER JOIN Person ON Participant.Person_Id = Person.Id WHERE Trial.Id = '" + trialId + "' AND Person.Username = '" + username + "';";
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 int trialParticipantId = (int)cmd.ExecuteScalar();
 
-                List<String> questionIds = new List<String>();
-                List<String> questionTitles = new List<String>();
+                List<String> questionIds = new List<String>();      // stores the unique id for each question
+                List<String> questionTitles = new List<String>();   // stores the question name/text
                 sql = "SELECT * FROM Intervention_Area_Test_Question WHERE Intervention_Area_Test_Id = '" + testId + "' ORDER BY Sequence;";
                 cmd = new SqlCommand(sql, conn);
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
+                    // read the id's and questions titles into the string lists
                     questionIds.Add(reader["Id"].ToString());
                     questionTitles.Add(reader["Question"].ToString());
                 }
-                for (int i = 0; i < result.Results.Count; i++)
+                for (int i = 0; i < result.Results.Count; i++) // for each result that was returned from the server
                 {
-
+                    //get the timestamp of when the test was completed and convert back to local time
                     DateTime timestamp = DateTime.ParseExact(result.Results[i].Timestamp.ToString(), "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                    timestamp = TimeZone.CurrentTimeZone.ToLocalTime(timestamp);
 
-                    int Trial_Participant_Intervention_Area_Test_Id = insertTestCompleted(trialParticipantId, testId, timestamp); //inserts test details
+                    int Trial_Participant_Intervention_Area_Test_Id = insertTestCompleted(trialParticipantId, testId, timestamp); //inserts test details and return the id (function is found below)
+                    // loop insert each answer into the database (insertAnswer function is found below)
                     for (int j = 0; j < questionIds.Count; j++)
                     {
                         if (questionTitles[j] == "q1")
@@ -328,56 +349,65 @@ namespace Professional_Experience.Controllers
                         }
                     }
                 }
-
-                ViewBag.result = "Result retrieval succeeded";
+                return "Result retrieval succeeded";
             }
-            else if (result.Sucess == "false")
+            else
             {
-                ViewBag.result = "Result retrieval failed";
+                return "Result retrieval failed";
             }
-
-            return View();
         }
 
+        // ============================== this controller submits login details to the node server ====================================
         public ActionResult SubmitExternalLogin(ExternalLoginViewModel ExternalLogin, int testId)
         {
+            // ExternalLogin is the class that forms the request
             ExternalLogin.request = "getAPIKey";
+            // the following prepares the request using the ExternalLogin class into a json string
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             string predata = serializer.Serialize(ExternalLogin);
             var data = Encoding.ASCII.GetBytes(predata);
+
+            //create a connection to the node server...
             var request = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:8080/externalapi");
             request.Method = "POST";
             request.Accept = "application/json";
             request.ContentType = "application/json";
             request.ContentLength = data.Length;
+            // send the request..
             using (var stream = request.GetRequestStream())
             {
                 stream.Write(data, 0, data.Length);
                 stream.Close();
             }
-
+            // read the response from the node server and store into a dynamic class called "content"
             var response = request.GetResponse();
             var rStream = response.GetResponseStream();
             var sr = new StreamReader(rStream);
             var content = sr.ReadToEnd();
             dynamic result = Newtonsoft.Json.JsonConvert.DeserializeObject(content);
-            if (result.Success == "true")
+
+
+            if (result.Success == "true") // if the response returns a success, insert the user login and api key into the database
             {
+                //get current username and open a connection to the database
                 String username = System.Web.HttpContext.Current.User.Identity.Name;
                 String connectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
                 SqlConnection conn = new SqlConnection(connectionString);
                 conn.Open();
 
+                // get the person id
                 String sql = "SELECT Id FROM Person WHERE Username = '" + username + "'";
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 int personId = (int)cmd.ExecuteScalar();
 
+                // get the participant id using person id
                 sql = "SELECT Id FROM Participant WHERE Person_Id = " + personId;
                 cmd = new SqlCommand(sql, conn);
                 int participantId = (int)cmd.ExecuteScalar();
 
-                string api_key = result.APIKey.ToObject<string>();
+                string api_key = result.APIKey.ToObject<string>(); // get api key from the response
 
+                // insert the api key into database with appropriate test id and participant id
                 sql = "INSERT INTO Participant_Intervention_Area_API_Key (Participant_Id, Intervention_Area_Test_Id, API_key) VALUES (" + participantId + ", " + testId + ", '" + api_key + "')";
                 cmd = new SqlCommand(sql, conn);
                 cmd.ExecuteNonQuery();

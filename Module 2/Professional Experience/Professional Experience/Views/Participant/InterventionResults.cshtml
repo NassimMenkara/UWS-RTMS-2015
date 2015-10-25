@@ -19,15 +19,15 @@
     <br />
     Hi, <b>@ViewBag.Username</b> please select an assigned intervention and a test to record your results, Thank you for participating! <br />
 
-
-    <div class="row">
+    <br />
+    <div class="row list-group-item">
         <div class="col-md-4">
-            <ul class="nav nav-pills nav-stacked">
+            <ul class="nav nav-pills nav-stacked list-group">
                 @{
-                    <li><h3>Interventions</h3></li>
+                    <li><h3><b>Interventions</b></h3></li>
                     for (int i = 0; i < ViewBag.Interventions.Count; i++)
                     {
-                        <li ng-class="setActive(@i)"><a href ng-click="setIndex(@i)">@ViewBag.Interventions[i].Intervention_Name</a></li>
+                        <li class="list-group-item" ng-class="setActive(@i)"><a href ng-click="setIndex(@i)">@ViewBag.Interventions[i].Intervention_Name</a></li>
                     }
                 }
 
@@ -36,10 +36,9 @@
     @{
         for (int i = 0; i < ViewBag.Interventions.Count; i++)
         {
-        <div id="@ViewBag.Interventions[i]" ng-show="check(@i)" class="col-md-8" style="display:none">
-            <h3>Intervention: @ViewBag.Interventions[i].Intervention_Name</h3>
+        <div id="@ViewBag.Interventions[i]" ng-show="check(@i)" class="col-md-8 panel panel-default" style="display:none;">
+            <h3><b>Intervention:</b> @ViewBag.Interventions[i].Intervention_Name</h3>
             <p><b>Description:</b> @ViewBag.Interventions[i].Intervention_Description</p>
-            You must record your results for the tests below:
             @{
                 <h4>Please select a test:</h4>
             for (int j = 0; j < ViewBag.Interventions[i].Tests.Count; j++)
@@ -47,25 +46,34 @@
                 int trialId = ViewBag.TrialId;
                 String testName = ViewBag.Interventions[i].Tests[j].Test_Name;
                 int testId = ViewBag.Interventions[i].Tests[j].Test_Id;
-                if(testName == "Mockup External Test"){
-                    //Need to edit here
-                    @:<button id="@testName" class="btn-sm btn-primary" onclick="location.href = '/Participant/ExternalTestIndex/?trialId=@trialId&testId=@testId';">@testName</button><br />
-                }else{
-                    @:<button id="@testName" class="btn-sm btn-primary" onclick="location.href = '/Participant/CompleteTest/?trialId=@trialId&testId=@testId&testName=@testName';">@testName</button><br />
-                }
-                <b>Description:</b> @ViewBag.Interventions[i].Tests[j].Test_Description <br />
+                @:<div class="panel panel-default">
+                    @:<div class="panel-heading">
+                        @:<h3 class="panel-title"><b>@testName</b></h3>
+                    @:</div>
+                    @:<div class="panel-body">
+                        @:<b>Description:</b> @ViewBag.Interventions[i].Tests[j].Test_Description <br /><br />
+                        @:<div style="width:300px;">
+                            if(testName == "Simply Brain Training"){
+                            //Need to edit here
+                            @:<button id="@testName" class="btn btn-block btn-danger" onclick="location.href = '/Participant/ExternalTestIndex/?trialId=@trialId&testId=@testId';">Begin External Test</button><br />
+                            }else{
+                            @:<button id="@testName" class="btn btn-block btn-primary" onclick="location.href = '/Participant/CompleteTest/?trialId=@trialId&testId=@testId&testName=@testName';">Begin Test</button><br />
+                            }
+                            @:
+                        @:</div>
+                        @:
+                    @:</div>
+                @:</div>
             }
-}
+            }
         </div>
         }
-}
+    }
      </div>
     @{
-    if (ViewBag.Interventions.Count == 0)
-    {
-        <h4><b>You are currently not assigned to any interventions</b></h4>
-    } 
+        if (ViewBag.Interventions.Count == 0)
+        {
+            <h4><b>You are currently not assigned to any interventions</b></h4>
+        } 
     }
-
-
 </div>

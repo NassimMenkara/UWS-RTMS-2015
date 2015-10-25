@@ -4,27 +4,28 @@
     ViewBag.Title = "ExternalTestIndex";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+@section scripts{
+    <script src="~/Javascript/ExternalTestApp.js"> </script>
+}
 <h2>External Test</h2>
-<p1>
+<div ng-app="ExternalTestApp" ng-controller="ExternalTestController" style="width:300px;">
     @{
         if (ViewBag.api_key == "false")
         {
             using (Html.BeginForm("SubmitExternalLogin", "Participant", new { testId = @ViewBag.testId }, FormMethod.Post, null))
             {
-                <p1>Please Login:</p1><br />
+                <p1>Please Login to External provider:</p1><br />
                 <b>Username:</b>
                 @Html.TextBoxFor(m => m.username, new { @class = "form-control" })
                 <b>Password:</b>
-                @Html.PasswordFor(m => m.password, new { @class = "form-control" })
-                <input type="submit" value="Log in" class="btn btn-default" />
+                @Html.PasswordFor(m => m.password, new { @class = "form-control" }) <br />
+                <input type="submit" value="Log in" class="btn btn-block btn-primary" />
             }
         }
         else
         {
-            <button id="externalTest" class="btn-sm btn-primary" onclick="location.href = 'http://127.0.0.1:8080/completeTest#?apiKey=@ViewBag.api_key';">Complete external test</button><br />
-            <button id="retrieveResults" class="btn-sm btn-primary" onclick="location.href = '@Url.Action("ExternalTestResultRetrieval", "Participant", new { trialId = @ViewBag.trialId, testId = @ViewBag.testId }, null)';">Retrieve Results</button><br />
-
+            <button id="externalTest" class="btn btn-block btn-primary"  onclick="location.href = 'http://127.0.0.1:8080/completeTest#?apiKey=@ViewBag.api_key';">Complete external test</button><br />
+            <button id="retrieveResults" class="btn btn-block btn-primary" ng-click="retrieveRequest(@ViewBag.trialId, @ViewBag.testId)">Retrieve Results</button><br />
         }
     }
-</p1>
+</div>

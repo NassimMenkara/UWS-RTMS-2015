@@ -232,6 +232,7 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Javascript\CompleteTestApp.js" />
+    <Content Include="Javascript\ExternalTestApp.js" />
     <Content Include="Javascript\InterventionResultsApp.js" />
     <Content Include="Javascript\ReportingApp.js" />
     <Content Include="Scripts\angular-animate.js" />
@@ -1086,7 +1087,6 @@
     <Content Include="Views\Participant\InterventionResults.cshtml" />
     <Content Include="Views\Participant\CompleteTest.cshtml" />
     <Content Include="Views\Participant\ExternalTestIndex.cshtml" />
-    <Content Include="Views\Participant\ExternalTestResultRetrieval.cshtml" />
     <Content Include="Views\Participant\MyTrials.cshtml" />
   </ItemGroup>
   <ItemGroup>
