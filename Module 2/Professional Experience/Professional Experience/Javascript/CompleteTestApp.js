@@ -5,11 +5,13 @@ function onStart() {
     // on start loops through all divs inside main div and sets them to be displayed
     var div = document.getElementById('pages');
     var divs = div.getElementsByTagName('div');
-    pageCount = divs.length;
-    console.log(pageCount);
     for (var i = 0; i < divs.length; i++) {
-        divs[i].style.display = "block";
+        if (divs[i].id.substr(0, 4) == 'page') {
+            pageCount++;
+            divs[i].style.display = "block";
+        }
     }
+    console.log(pageCount);
 }
 
 //--------------------------------------------------AngularJS--------------------------------------------------
@@ -20,6 +22,14 @@ CompleteTestApp.controller('CompleteTestController', function ($scope, $http) {
     $scope.multis = {};
     $scope.answers = [];
     $scope.index = 1;
+    $scope.submitted = false;
+
+    window.onbeforeunload = function () {
+        //if the form has been changed, prompt user to confirm leaving from page
+        if (JSON.stringify($scope.test) != '{}' && !$scope.submitted) {
+            return "Are you sure you wish to leave this test? your answers will be lost!";
+        }
+    }
 
     // compares current index with div's index to determine if div should show
     $scope.check = function (i) {
@@ -64,6 +74,7 @@ CompleteTestApp.controller('CompleteTestController', function ($scope, $http) {
             then(function (response) {
                 if (response.data == "success") {
                     alert("Successfully completed test!");
+                    $scope.submitted = true;
                     var oldURL = document.referrer;
                     location.href = oldURL;
                 } else {
@@ -72,6 +83,16 @@ CompleteTestApp.controller('CompleteTestController', function ($scope, $http) {
             }, function (error) {
         });
     };
-    
+
+    $scope.checkFieldValidity = function (field, type) {
+        if (field != undefined)
+            if(type == 'color'){
+                return 'input-group has-success has-feedback';
+            } else {
+                return 'glyphicon glyphicon-ok form-control-feedback';
+            }
+        else
+            return '';
+    }
 });
 //-------------------------------------------------------------------------------------------------------------

@@ -26,6 +26,7 @@
         {
             <button id="externalTest" class="btn btn-block btn-primary"  onclick="location.href = 'http://127.0.0.1:8080/completeTest#?apiKey=@ViewBag.api_key';">Complete external test</button><br />
             <button id="retrieveResults" class="btn btn-block btn-primary" ng-click="retrieveRequest(@ViewBag.trialId, @ViewBag.testId)">Retrieve Results</button><br />
+            <button onclick="window.history.back()" class="btn btn-block btn-default">Back</button>
         }
     }
 </div>

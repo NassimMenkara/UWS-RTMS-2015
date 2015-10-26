@@ -11,14 +11,22 @@
 <div ng-app="InterventionSetupApp" ng-controller="InterventionSetupController">
     <form name="interventionForm">
         <br />
-        <div id="InterventionSetup" ng-show="check(1)" style="max-width:400px">
+        <div id="InterventionSetup" ng-show="check(1)" style="max-width:400px;">
             <h2>Intervention Setup</h2>
             <ol class="breadcrumb">
                 <li><a class="btn btn-primary" href="#"><i class="glyphicon glyphicon-home"></i></a></li>
             </ol>
             <b>Please create your intervention:</b><br />
-            <b>Name:</b> <input id="interventionName" type="text" class="form-control input-lg" ng-model="intervention_name" size="60" ng-required="intervention_name" placeholder="Intervention Name"/><br />
-            <b>Description:</b> <textarea id="interventionDescription" rows="3" cols="40" class="form-control input-lg" ng-model="intervention_description" placeholder="Intervention Description"></textarea><br />
+            <b>Name:</b>
+            <div ng-class="checkFieldValidity(intervention_name, 'color')">
+                <input id="interventionName" type="text" class="form-control input-lg" ng-model="intervention_name" size="60" placeholder="Intervention Name"/><br />
+                <span ng-class="checkFieldValidity(intervention_name, 'icon')"></span>
+            </div>
+
+            <div ng-class="checkFieldValidity(intervention_description, 'color')">
+                <b>Description:</b> <textarea id="interventionDescription" rows="3" cols="40" class="form-control input-lg" ng-model="intervention_description" placeholder="Intervention Description"></textarea><br />
+            </div>
+
 
 
             <b>Investigators:</b> <span id="selectedInvestigators" ></span> <br />
@@ -63,8 +71,14 @@
                 <li><a class="btn btn-primary" href>Add/Edit Test</a></li>
             </ol>
             <b>Please create your test:</b><br />
-            <b>Name:</b> <input id="testName" type="text" class="form-control input-lg" ng-model="test_name" size="60" placeholder="Test Name"/><br />
-            <b>Description:</b> <textarea id="testDescription" rows="3" cols="40" class="form-control input-lg" ng-model="test_description" placeholder="Test Description"></textarea><br />
+            <b>Name:</b>
+            <div ng-class="checkFieldValidity(test_name, 'color')">
+                <input id="testName" type="text" class="form-control input-lg" ng-model="test_name" size="60" placeholder="Test Name" /><br />
+                <span ng-class="checkFieldValidity(test_name, 'icon')"></span>
+            </div>
+            <div ng-class="checkFieldValidity(test_description, 'color')">
+                <b>Description:</b> <textarea id="testDescription" rows="3" cols="40" class="form-control input-lg" ng-model="test_description" placeholder="Test Description"></textarea><br />
+            </div>
             <b>Questions:</b><br />
             <select id="questionSelect" class="form-control" size="8" onchange="questionSelectChange()" ng-disabled="checkSelectForOptions('questionSelect')" disabled></select><br />
             <button id="editQuestionBtn" ng-click="editQuestion()" style="display:none;" class="btn btn-default btn-lg btn-block">Edit Question</button>
@@ -99,7 +113,11 @@
                 <li><a class="btn btn-primary" href>Add/Edit Question</a></li>
             </ol>
             <b>Please create your question:</b><br />
-            <b>Question:</b> <input id="questionTitle" type="text" class="form-control input-lg" ng-model="question_title" size="80" placeholder="Question you want to ask"/><br />
+            <b>Question:</b>
+            <div ng-class="checkFieldValidity(question_title, 'color')">
+                <input id="questionTitle" type="text" class="form-control input-lg" ng-model="question_title" size="80" placeholder="Question you want to ask" /><br />
+                <span ng-class="checkFieldValidity(question_title, 'icon')"></span>
+            </div>
             <b>Answer Type:</b> <select id="answerType" class="form-control input-lg" onchange="questionTypeChange(null)" ng-model="question_type">
                             <option value="1" ng-selected="true">Multiple Choice</option>
                             <option value="2">Multiple Answer</option>
@@ -113,7 +131,11 @@
                 <option value="m">m</option>
                 <option value="kg">kg</option>
             </select><br />
-            <input id="answer" type="text" class="form-control input-lg" ng-model="add_answer" size="40" placeholder="An Answer"/><br /><button id="addAnswerBtn" ng-click="addAnswer()" class="btn btn-primary btn-lg btn-block">Add Answer</button><br /><br />
+            <div ng-class="checkFieldValidity(add_answer, 'color')">
+                <input id="answer" type="text" class="form-control input-lg" ng-model="add_answer" size="40" placeholder="An Answer" /><br />
+                <span ng-class="checkFieldValidity(add_answer, 'icon')"></span>
+            </div>
+            <button id="addAnswerBtn" ng-click="addAnswer()" class="btn btn-primary btn-lg btn-block">Add Answer</button><br /><br />
             <button ng-click="saveQuestion()" ng-disabled="validateQuestion()" class="btn btn-success btn-lg btn-block">Save</button>
             <button ng-click="backQuestion()" class="btn btn-default btn-lg btn-block">Back</button>
         </div><br />

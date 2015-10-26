@@ -182,3 +182,7 @@ C:\Users\Nassim\Desktop\UWS\Professional Experience\UWS-RTMS-2015\Module 2\Profe
 C:\Users\Nassim\Desktop\UWS\Professional Experience\UWS-RTMS-2015\Module 2\Professional Experience\Professional Experience\bin\PdfSharp.Charting.xml
 C:\Users\Nassim\Desktop\UWS\Professional Experience\UWS-RTMS-2015\Module 2\Professional Experience\Professional Experience\bin\de\PdfSharp.resources.dll
 C:\Users\Nassim\Desktop\UWS\Professional Experience\UWS-RTMS-2015\Module 2\Professional Experience\Professional Experience\bin\de\PdfSharp.Charting.resources.dll
+C:\Users\Nassim\Desktop\UWS\Professional Experience\UWS-RTMS-2015\Module 2\Professional Experience\Professional Experience\bin\PagedList.dll
+C:\Users\Nassim\Desktop\UWS\Professional Experience\UWS-RTMS-2015\Module 2\Professional Experience\Professional Experience\bin\PagedList.Mvc.dll
+C:\Users\Nassim\Desktop\UWS\Professional Experience\UWS-RTMS-2015\Module 2\Professional Experience\Professional Experience\bin\PagedList.xml
+C:\Users\Nassim\Desktop\UWS\Professional Experience\UWS-RTMS-2015\Module 2\Professional Experience\Professional Experience\bin\PagedList.Mvc.xml

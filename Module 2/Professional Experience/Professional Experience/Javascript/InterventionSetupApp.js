@@ -209,8 +209,17 @@ var InterventionSetupApp = angular.module('InterventionSetupApp', []);
 
 InterventionSetupApp.controller('InterventionSetupController', function ($scope, $http) {
     $scope.index = 1;
+    $scope.submitSuccessful = false;
     $scope.interventionObj = intervention;
     getInvestigators();
+
+    window.onbeforeunload = function () {
+        //if the form has been changed, prompt user to confirm leaving from page
+        if ($scope.intervention_name != undefined || $scope.intervention_description != undefined || document.getElementById("testSelect").length >= 1) {
+            if(!$scope.submitSuccessful)
+                return "Are you sure you wish to leave Intervention Setup? an intervention which hasn't been saved will be lost";
+        }
+    }
 
     // compares current index with div's index to determine if div should show
     $scope.check = function (i) {
@@ -230,7 +239,12 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         createIntervention();
         $http.post('/Administrator/SubmitIntervention', JSON.stringify(intervention)).
             then(function (response) {
-                printMessage("Response:" + response.data);
+                if (response.data == "success") {
+                    $scope.submitSuccessful = true;
+                    printMessage("The intervention was saved successfully")
+                } else {
+                    printMessage("Response:" + response.data);
+                }
             }, function (error) {
         });
     };
@@ -254,6 +268,9 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
             interventionInvalid = true;
         }
         if (document.getElementById("testSelect").length < 1) { //an intervention must have at least one test
+            interventionInvalid = true;
+        }
+        if ($scope.submitSuccessful) {
             interventionInvalid = true;
         }
         return interventionInvalid;
@@ -373,6 +390,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
             currentTestId = testSelect.options[testSelect.selectedIndex].value; //set currentTestId to test selected from list
             testIndex = getTestIndex(currentTestId);
             tempTest = clone(intervention.Tests[testIndex]);
+            $scope.test_name = intervention.Tests[testIndex].Test_Name;
             document.getElementById("testName").value = intervention.Tests[testIndex].Test_Name;
             document.getElementById("testDescription").value = intervention.Tests[testIndex].Test_Description;
             var questionSelect = document.getElementById("questionSelect");
@@ -407,6 +425,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
     // create a new question
     $scope.createQuestion = function() {
         var question = new Question(); //create question object
+        $scope.question_title = '';
         questionCount++;
         var testIndex = getTestIndex(currentTestId);
         question.Question_Id = questionCount; //Id is +1 of length, starting id = 1
@@ -430,7 +449,8 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
             currentQuestionId = questionSelect.options[questionSelect.selectedIndex].value;
             testIndex = getTestIndex(currentTestId);
             questionIndex = getQuestionIndex(testIndex, currentQuestionId);
-            tempQuestion = clone(intervention.Tests[testIndex].Questions[questionIndex])
+            tempQuestion = clone(intervention.Tests[testIndex].Questions[questionIndex]);
+            $scope.question_title = intervention.Tests[testIndex].Questions[questionIndex].Question_Title;
             document.getElementById("questionTitle").value = intervention.Tests[testIndex].Questions[questionIndex].Question_Title; //prefill questionTitle
             document.getElementById("answerType").value = intervention.Tests[testIndex].Questions[questionIndex].Answer_Type; //prefill answerType
             questionTypeChange(intervention.Tests[testIndex].Questions[questionIndex].Answer_Type);
@@ -534,6 +554,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         intervention.Tests[testIndex].Questions[questionIndex].Answer_Type = answerType.options[answerType.selectedIndex].value;
         currentQuestionId = 0;
         printMessage("Question has been saved");
+        $scope.question_title = '';
         resetQuestionView();
         if (answerSelected) {
             answerSelected = false;
@@ -564,7 +585,8 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
         if (document.getElementById("answer").value != "") { //answer cannot be blank
             var select = document.getElementById("answersSelect");
             var answer = document.getElementById("answer").value;
-            document.getElementById("answer").value = "";
+            //document.getElementById("answer").value = "";
+            $scope.add_answer = '';
             var option = document.createElement("option");
             option.text = answer;
             select.add(option);
@@ -596,6 +618,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
     // action for back button in test view
     $scope.backTest = function() {
         if (editingTest) {
+            $scope.test_name = '';
             resetTestView();
             var testIndex = getTestIndex(currentTestId);
             intervention.Tests[testIndex] = clone(tempTest);
@@ -675,6 +698,17 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
             return true;
         else
             return false;
+    }
+
+    $scope.checkFieldValidity = function (field, type) {
+        if (field != undefined && field != '')
+            if (type == 'color') {
+                return 'has-success has-feedback';
+            } else {
+                return 'glyphicon glyphicon-ok form-control-feedback';
+            }
+        else
+            return '';
     }
 });
 //-------------------------------------------------------------------------------------------------------------

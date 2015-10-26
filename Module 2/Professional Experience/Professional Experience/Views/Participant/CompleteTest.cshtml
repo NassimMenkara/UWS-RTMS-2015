@@ -22,7 +22,7 @@
                 if (i % 5 == 1)
                 {
                     pageCounter++;
-                    @:<div id="@pageCounter" ng-show="check(@pageCounter)" style="display: none;">
+                    @:<div id="page @pageCounter" ng-show="check(@pageCounter)" style="display: none;">
                 }
                         switch ((int)ViewBag.Questions[i - 1].Answer_Type)
                         {
@@ -52,11 +52,22 @@
                                     }
                                 break;
                             case 3: //Measurement type
-                            @:<p><b>Question @i: @ViewBag.Questions[i - 1].Question_Title</b></p><input id="@ViewBag.Questions[i - 1].Question_Id" type="number" class="form-control" ng-model="test[@ViewBag.Questions[i - 1].Question_Id]" required /><br />
+                            @:<p><b>Question @i: @ViewBag.Questions[i - 1].Question_Title</b></p><br />
+                            @:<div ng-class="checkFieldValidity(test[@ViewBag.Questions[i - 1].Question_Id], 'color')">
+                                @:<input id="@ViewBag.Questions[i - 1].Question_Id" type="number" class="form-control" ng-model="test[@ViewBag.Questions[i - 1].Question_Id]" style="border-radius: 4px;" required />
+                                @:<span ng-class="checkFieldValidity(test[@ViewBag.Questions[i - 1].Question_Id], 'icon')"></span>
+                            @:</div> 
+                            @:<br />  
                                 break;
 
-                            case 4: //Text type
-                            @:<p><b>Question @i: @ViewBag.Questions[i - 1].Question_Title</b></p><input id="@ViewBag.Questions[i - 1].Question_Id" type="text" class="form-control" ng-model="test[@ViewBag.Questions[i - 1].Question_Id]" required /><br />
+                            case 4: //Text type  
+                            @:<p><b>Question @i: @ViewBag.Questions[i - 1].Question_Title</b></p><br />
+                            @:<div ng-class="checkFieldValidity(test[@ViewBag.Questions[i - 1].Question_Id], 'color')">
+                                @:<input id="@ViewBag.Questions[i - 1].Question_Id" type="text" class="form-control" ng-model="test[@ViewBag.Questions[i - 1].Question_Id]" style="border-radius: 4px;" required />
+                                @:<span ng-class="checkFieldValidity(test[@ViewBag.Questions[i - 1].Question_Id], 'icon')"></span>
+                            @:</div> 
+                            @:<br />                              
+
                                 break;
                             default:
                                 break;
@@ -116,9 +127,10 @@
         </nav>
         <div style="width:280px">
             <input type="submit" id="submitBtn" class="btn btn-block btn-primary" value="Submit"></input>
-            <button id="backBtn" onclick="location.href = '/Participant/InterventionResults/?trialId=@ViewBag.TrialId';" class="btn btn-block btn-default">Cancel</button>
+            <button id="backBtn" onclick="location.href = '/Participant/InterventionResults/@ViewBag.TrialId';" class="btn btn-block btn-default">Cancel</button>
         </div>
         </form>
+
 </div>
 
 

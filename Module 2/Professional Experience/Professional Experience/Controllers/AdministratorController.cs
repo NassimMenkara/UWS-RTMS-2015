@@ -146,7 +146,7 @@ namespace Professional_Experience.Controllers
             if (validInterventionErrors.Count == 0)
             {
                 insertIntervention(intervention);
-                return Json("The intervention was saved successfully", JsonRequestBehavior.AllowGet);
+                return Json("success", JsonRequestBehavior.AllowGet);
             }
             else
             {

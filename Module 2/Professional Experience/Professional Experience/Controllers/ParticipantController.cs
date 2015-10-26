@@ -14,7 +14,7 @@ using System.Web.Script.Serialization;
 using System.Net;
 using System.IO;
 using System.Text;
-
+using PagedList;
 
 namespace Professional_Experience.Controllers
 {
@@ -39,32 +39,23 @@ namespace Professional_Experience.Controllers
         }
 
         // retrieves participant's trials
-        public ActionResult MyTrials()
+        public ActionResult MyTrials(int page = 1)
         {
-            var m = new List<Professional_Experience.Models.MyTrialViewModel>();
-            var trialParticipants = _db.Trial_Participant.Where(tp => tp.Participant_Id == GetCurrentParticipant.Id);
+            var participant = GetCurrentParticipant;
+            var trials = _db.Trials.Where(t => t.Trial_Participant.Where(tp => tp.Participant_Id == participant.Id).Count() != 0);
 
-            foreach (var tp in trialParticipants)
-            {
-                var model = new Professional_Experience.Models.MyTrialViewModel();
-                model.TrialId = (int)tp.Trial_Id;
-                model.TrialName = tp.Trial.Name;
-                model.TrialDescription = tp.Trial.Description;
-                m.Add(model);
-            }
-
-            return View(m.AsEnumerable());
+            return View(new PagedList<PX_Model.Trial>(trials.OrderBy(t => t.Name), page, 5));
         }
 
 
-        public ActionResult InterventionResults(int trialId)
+        public ActionResult InterventionResults(int id)
         {
             String username = System.Web.HttpContext.Current.User.Identity.Name;
             String connectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
             SqlConnection conn = new SqlConnection(connectionString);
             conn.Open();
             //String sql = "SELECT * FROM Trial INNER JOIN Trial_Participant ON Trial_Participant.Trial_Id = Trial.Id INNER JOIN Participant ON Trial_Participant.Participant_Id = Participant.Id INNER JOIN Person ON Participant.Person_Id = Person.Id AND Person.Username = '" + username + "';";
-            String sql = "SELECT * FROM Trial WHERE Id = '" + trialId + "';";
+            String sql = "SELECT * FROM Trial WHERE Id = '" + id + "';";
             SqlCommand cmd = new SqlCommand(sql, conn);
             SqlDataReader nwReader = cmd.ExecuteReader();
             while (nwReader.Read())
@@ -420,6 +411,27 @@ namespace Professional_Experience.Controllers
             return Redirect(Request.UrlReferrer.ToString());
         }
 
+        [HttpPost]
+        public ActionResult SearchTrials(string searchWord, bool myTrials)
+        {
+            var participant = GetCurrentParticipant;
+            IEnumerable<PX_Model.Trial> trials;
+            searchWord = searchWord.ToLower();
+
+            if (myTrials)
+            {
+                trials = _db.Trials.Where(t => t.Trial_Participant.Where(tp => tp.Participant_Id == participant.Id).Count() != 0);
+            }
+            else
+            {
+                trials = _db.Trials.Where(t => t.Trial_Participant.Where(tp => tp.Participant_Id == participant.Id).Count() == 0);
+            }
+
+            trials = trials.Where(t => t.Name.ToLower().Contains(searchWord) || t.Description.ToLower().Contains(searchWord));
+            var m = new PagedList<PX_Model.Trial>(trials.OrderBy(t => t.Name), 1, trials.Count() + 1);
+
+            return ((myTrials) ? View("MyTrials", m) : View("ParticipateTrialList", m));
+        }
 
         /* Inserts into Trial_Participant_Intervention_Area_Test 
          * to record details of a completed test */

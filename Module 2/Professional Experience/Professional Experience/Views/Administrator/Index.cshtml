@@ -5,3 +5,31 @@
 }
 
 <h2>Administrator Dashboard</h2>
+
+@Html.ValidationSummary("", new { @class = "text-danger" })
+
+<div style="width:300px;">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title"><b>Trial Setup</b></h3>
+        </div>
+        <div class="panel-body">
+            @Html.ActionLink("Trial", "Trial", new { }, new { @class = "btn btn-block btn-primary" })<br />
+            @Html.ActionLink("Screening Criteria", "ScreeningCriteria", new { }, new { @class = "btn btn-block btn-primary" })<br />
+            @Html.ActionLink("Investigator", "Investigator", new { }, new { @class = "btn btn-block btn-primary" })<br />
+            @Html.ActionLink("Create Baseline Assessment", "CreateBaselineAssessment", new { }, new { @class = "btn btn-block btn-primary" })<br />
+            @Html.ActionLink("Randomise Trial", "RandomiseTrialParticipants", new { }, new { @class = "btn btn-block btn-primary" })<br />
+            @Html.ActionLink("View all Trials", "ViewTrials", new { }, new { @class = "btn btn-block btn-primary" })<br />
+            @Html.ActionLink("Reports", "Report", new { }, new { @class = "btn btn-block btn-primary" })
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title"><b>Intervention Setup</b></h3>
+        </div>
+        <div class="panel-body">
+            @Html.ActionLink("Intervention Setup", "InterventionSetup", new { }, new { @class = "btn btn-block btn-primary" })<br />
+            @Html.ActionLink("Reporting", "Reporting", new { }, new { @class = "btn btn-block btn-primary" })<br />
+        </div>
+    </div>
+</div>
