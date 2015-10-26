@@ -317,6 +317,8 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
     // create a new test
     $scope.createTest = function () {
         var test = new Test(); //create test object
+        $scope.test_name = '';
+        $scope.test_description = '';
         testCount++;
         test.Test_Id = testCount; //Id is +1 of length, starting id = 1
         currentTestId = test.Test_Id; //the current test's id
@@ -392,6 +394,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
             tempTest = clone(intervention.Tests[testIndex]);
             $scope.test_name = intervention.Tests[testIndex].Test_Name;
             document.getElementById("testName").value = intervention.Tests[testIndex].Test_Name;
+            $scope.test_description = intervention.Tests[testIndex].Test_Description;
             document.getElementById("testDescription").value = intervention.Tests[testIndex].Test_Description;
             var questionSelect = document.getElementById("questionSelect");
             for (var i = 0; i < intervention.Tests[testIndex].Questions.length; i++) {
@@ -619,6 +622,7 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
     $scope.backTest = function() {
         if (editingTest) {
             $scope.test_name = '';
+            $scope.test_description = '';
             resetTestView();
             var testIndex = getTestIndex(currentTestId);
             intervention.Tests[testIndex] = clone(tempTest);
@@ -626,6 +630,8 @@ InterventionSetupApp.controller('InterventionSetupController', function ($scope,
             printMessage("Test was not edited");
             editingTest = false;
         } else {
+            $scope.test_name = '';
+            $scope.test_description = '';
             discardTest();
         }
         if (questionSelected) {
