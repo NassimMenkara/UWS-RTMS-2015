@@ -35,6 +35,32 @@ namespace Professional_Experience.Controllers
             return View();    
         }
 
+        public ActionResult LinkIntervention()
+        {
+            return View();
+        }
+
+
+        public String LinkInterventionToParticipantGroup(LinkInterventionModel m)
+        {
+            if (ModelState.IsValid)
+            {
+                int interventionId = m.InterventionId;
+                int participantGroupId = m.ParticipantGroupId;
+                String connectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+                SqlConnection conn = new SqlConnection(connectionString);
+                conn.Open();
+                String sql = "INSERT INTO Participant_Group_Intervention_Area (Participant_Group_Id, Intervention_Area_Id) VALUES (" + participantGroupId + ", " + interventionId + ")";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+
+                cmd = new SqlCommand(sql, conn);
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                return "success";
+            }
+            return "fail";
+        }
+
        /* Get all interventions */
         public string GetInterventions()
         {
@@ -42,6 +68,19 @@ namespace Professional_Experience.Controllers
             SqlConnection con = new SqlConnection(connectionString);
             con.Open();
             String sql = "SELECT * FROM Intervention_Area;";
+            SqlCommand cmd = new SqlCommand(sql, con);
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            return ConvertDataTabletoString(dt);
+        }
+
+        public string GetParticipantGroups()
+        {
+            String connectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+            SqlConnection con = new SqlConnection(connectionString);
+            con.Open();
+            String sql = "SELECT * FROM Participant_Group;";
             SqlCommand cmd = new SqlCommand(sql, con);
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             DataTable dt = new DataTable();

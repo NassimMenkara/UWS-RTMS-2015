@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "LinkIntervention";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="~/Javascript/LinkInterventionApp.js"> </script>
+
+}
+
+<h2>Link Intervention to Participant Group</h2>
+<div ng-app="LinkInterventionApp" ng-controller="LinkInterventionController">
+    <form name="linkInterventionForm">
+        <b>Please select a Participant Group:</b><br />
+        <input id="participantGroupSearch" type="text" ng-model="searchParticipantGroup" class="form-control" placeholder="Search for Participant Group" />
+        <select id="participantGroupSelect" size="8" ng-model="selected.participantGroup" ng-options="participantGroup.Name for participantGroup in participantGroups | filter:searchParticipantGroup" class="form-control"></select><br />
+        <b>Please select an Intervention:</b><br />
+        <input id="interventionSearch" type="text" ng-model="searchIntervention" class="form-control" placeholder="Search for Intervention" />
+        <select id="interventionSelect" size="8" ng-model="selected.intervention" ng-options="intervention.Name for intervention in interventions | filter:searchIntervention" class="form-control"></select><br />
+        <div style="width:300px;">
+            <button ng-click="submit()" class="btn btn-primary btn-block">Link Intervention</button><br />
+        </div>
+    </form>
+</div>

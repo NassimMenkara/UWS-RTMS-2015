@@ -176,8 +176,10 @@ ReportingApp.controller('ReportingController', function ($scope, $http) {
                     doc.text(60, y, "Question ID: " + tests[i].Questions[j].Id);
                     y += 30;
                     doc.text(60, y, doc.splitTextToSize("Question:" + tests[i].Questions[j].Question, 500));
+                    y += 90;
+                    doc.text(60, y, doc.splitTextToSize("Data Values:"));
                     y += 30;
-                    doc.text(60, y, doc.splitTextToSize("Values:" + objsToArr(tests[i].Questions[j].Answers), 500));
+                    doc.text(60, y, doc.splitTextToSize('- ' + objsToArr(tests[i].Questions[j].Answers), 500));
                     y += 60;
                     doc.text(60, y, "Chart:");
                     y += 60;

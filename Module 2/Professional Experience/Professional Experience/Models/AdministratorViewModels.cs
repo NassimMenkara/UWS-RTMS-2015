@@ -7,6 +7,14 @@ using System.Web.Mvc;
 
 namespace Professional_Experience.Models
 {
+    public class LinkInterventionModel
+    {
+        [Required]
+        public int InterventionId { get; set; }
+        [Required]
+        public int ParticipantGroupId { get; set; }
+    }
+
     public class ReportViewModel
     {
         [Required]

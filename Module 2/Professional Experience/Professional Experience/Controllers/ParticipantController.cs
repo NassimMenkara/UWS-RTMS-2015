@@ -18,7 +18,7 @@ using PagedList;
 
 namespace Professional_Experience.Controllers
 {
-    [Authorize(Roles="Participant")]
+    [Authorize(Roles = "Participant")]
     public class ParticipantController : UIController
     {
         // GET: Participant
@@ -79,8 +79,9 @@ namespace Professional_Experience.Controllers
                 classification = Convert.ToInt32(nwReader["Classification"].ToString());
             }
             nwReader.Close();
-            if(classification == 0){ //intervention group
-                sql = "SELECT Intervention_Area.Id AS interventionId, Intervention_Area.Name AS interventionName, Intervention_Area.Description AS interventionDescription FROM Intervention_Area INNER JOIN Participant_Group_Intervention_Area ON Intervention_Area.Id = Participant_Group_Intervention_Area.Intervention_Area_Id INNER JOIN Trial_Participant_Participant_Group ON Participant_Group_Intervention_Area.Participant_Group_Id = Trial_Participant_Participant_Group.Participant_Group_Id INNER JOIN Trial_Participant ON Trial_Participant.Id = Trial_Participant_Participant_Group.Trial_Participant_Id INNER JOIN Participant ON Trial_Participant.Participant_Id = Participant.Id INNER JOIN Person ON Person.Id = Participant.Person_Id WHERE username = '" + username + "';";
+            if (classification == 0)
+            { //intervention group
+                sql = "SELECT Intervention_Area.Id AS interventionId, Intervention_Area.Name AS interventionName, Intervention_Area.Description AS interventionDescription FROM Intervention_Area INNER JOIN Participant_Group_Intervention_Area ON Intervention_Area.Id = Participant_Group_Intervention_Area.Intervention_Area_Id INNER JOIN Trial_Participant_Participant_Group ON Participant_Group_Intervention_Area.Participant_Group_Id = Trial_Participant_Participant_Group.Participant_Group_Id INNER JOIN Trial_Participant ON Trial_Participant.Id = Trial_Participant_Participant_Group.Trial_Participant_Id INNER JOIN Participant ON Trial_Participant.Participant_Id = Participant.Id INNER JOIN Person ON Person.Id = Participant.Person_Id WHERE username = '" + username + "' AND Trial_Participant.Trial_Id = '" + id + "';";
                 cmd = new SqlCommand(sql, conn);
                 nwReader = cmd.ExecuteReader();
                 while (nwReader.Read())
@@ -149,7 +150,7 @@ namespace Professional_Experience.Controllers
             ViewBag.TestName = testName;
             ViewBag.TestId = testId;
             ViewBag.TrialId = trialId;
-            
+
             return View();
         }
 
@@ -157,7 +158,7 @@ namespace Professional_Experience.Controllers
          * and other test related fields. This data is then used to get the necessary Ids needed to validate and then
            insert the completed test into the database */
         public JsonResult SubmitTest()
-        {       
+        {
             String username = System.Web.HttpContext.Current.User.Identity.Name;
             HttpContext.Request.InputStream.Position = 0;
             var result = new System.IO.StreamReader(HttpContext.Request.InputStream).ReadToEnd().ToString();
@@ -183,7 +184,7 @@ namespace Professional_Experience.Controllers
             }
             conn.Close();
             int Trial_Participant_Intervention_Area_Test_Id = insertTestCompleted(trialParticipantId, Convert.ToInt32(testDetails.Intervention_Area_Test_Id), DateTime.Now); //inserts test details
-            for(int i = 0; i < questionIds.Count; i++)
+            for (int i = 0; i < questionIds.Count; i++)
             {
                 if (testAnswers[questionIds[i]] != null)
                 {

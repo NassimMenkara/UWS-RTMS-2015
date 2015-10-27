@@ -243,6 +243,7 @@
     <Content Include="Javascript\CompleteTestApp.js" />
     <Content Include="Javascript\ExternalTestApp.js" />
     <Content Include="Javascript\InterventionResultsApp.js" />
+    <Content Include="Javascript\LinkInterventionApp.js" />
     <Content Include="Javascript\ReportingApp.js" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />
@@ -1103,6 +1104,7 @@
     <Content Include="Views\Participant\CompleteTest.cshtml" />
     <Content Include="Views\Participant\ExternalTestIndex.cshtml" />
     <Content Include="Views\Participant\MyTrials.cshtml" />
+    <Content Include="Views\Administrator\LinkIntervention.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
